@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:postgrado/Core/Navigator/AppRouter.dart';
+import 'package:postgrado/Feacture/Home/Presentacion/Page/Home.dart';
+import 'package:postgrado/Feacture/Home/Presentacion/Page/snap.dart';
+
 
 
 
@@ -16,12 +19,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      routerConfig: _app_router.config(),
+      //routerConfig: _app_router.config(),
+      home: SplashScreen(),
     );
   }
 }

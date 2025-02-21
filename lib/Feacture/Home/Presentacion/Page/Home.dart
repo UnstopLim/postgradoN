@@ -1,129 +1,134 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
+import 'package:postgrado/Feacture/Home/Presentacion/Page/drawer.dart';
 
-@RoutePage()
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  const Home({super.key});
+
+  @override
+  State<Home> createState() => _ViewState();
+}
+
+class _ViewState extends State<Home> {
+  int token = 48556;
+  Duration duration = const Duration(minutes: 57, seconds: 13);
+  Timer? timer;
+
+  @override
+  void initState() {
+    super.initState();
+    startTimer();
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (duration.inSeconds > 0) {
+        setState(() {
+          duration -= const Duration(seconds: 1);
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String timeString = "${twoDigits(duration.inMinutes)}:${twoDigits(duration.inSeconds.remainder(60))}";
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.blue.shade900,
       ),
-      backgroundColor: Colors.grey[300],
-      body: SingleChildScrollView(
-        child: SizedBox(
-          height: screenHeight,
-          child: Stack(
+      body: Stack(
+        children: [
+          Column(
             children: [
-              // Fondo azul con el logo
-              Container(
-                height: screenHeight * 0.3,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.blue, Colors.blue.shade900],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+              Stack(
+                children: [
+                  ClipPath(
+                    clipper: YellowHeaderClipper(),
+                    child: Container(
+                      height: 190,
+                      width: double.infinity,
+                      color: Colors.yellow.shade700,
+                    ),
                   ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(40),
-                    bottomRight: Radius.circular(40),
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.school, // Aquí puedes poner tu logo
-                    size: 100,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              // Formulario flotante
-              Positioned(
-                top: screenHeight * 0.22, // Ajuste para que sobresalga
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min, // Evita que se expanda innecesariamente
-                    children: [
-                      Text(
-                        'Bienvenidoss',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
+                  ClipPath(
+                    clipper: HeaderClipper(),
+                    child: Container(
+                      height: 180,
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xFF005EBC), Color(0xFF002244)],
                         ),
                       ),
-                      SizedBox(height: 20),
-
-                    ],
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.school, color: Colors.white, size: 40),
+                          Text("Posgrado", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
                   ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text("Tiempo de token", style: TextStyle(fontSize: 28, color: Colors.black )),
+              const SizedBox(height: 10),
+              Text(timeString, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black)),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(50),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black26, blurRadius: 5, spreadRadius: 5),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const Icon(Icons.lock, size: 60, color: Colors.blueGrey),
+                    const SizedBox(height: 10),
+                    Text("$token", style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black)),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade800,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                      ),
+                      onPressed: () {},
+                      child: const Text("Generar token", style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-        ),
+        ],
       ),
-
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text(
-                "Usuario",
-                style: TextStyle(color: Colors.white, fontSize: 24),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.android),
-              title: const Text("Perfil"),
-              onTap: () {
-                context.router.push(Login());
-                Navigator.pop(context);
-
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.password),
-              title: const Text("Token"),
-              onTap: () {
-                context.router.push(Curs());
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.account_tree_rounded),
-              title: Text("Cursos"),
-              onTap: () {
-                context.router.push(Curs());
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.notifications_active),
-              title: Text("Notifications"),
-              onTap: () {
-                context.router.push(ForgotyouPass());
-                Navigator.pop(context);
-              },
-            )
-          ],
-        ),
-
-      ),
-
-
+      drawer: CustomDrawer(),
     );
-
   }
-
 }
+
+
+
+
+
+
+
+
