@@ -56,7 +56,7 @@ class _ViewState extends State<Home> {
                   ClipPath(
                     clipper: YellowHeaderClipper(),
                     child: Container(
-                      height: 190,
+                      height: 140,
                       width: double.infinity,
                       color: Colors.yellow.shade700,
                     ),
@@ -64,7 +64,7 @@ class _ViewState extends State<Home> {
                   ClipPath(
                     clipper: HeaderClipper(),
                     child: Container(
-                      height: 180,
+                      height: 130,
                       width: double.infinity,
                       decoration: const BoxDecoration(
                         gradient: LinearGradient(
@@ -73,11 +73,12 @@ class _ViewState extends State<Home> {
                           colors: [Color(0xFF005EBC), Color(0xFF002244)],
                         ),
                       ),
-                      child: const Column(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.school, color: Colors.white, size: 40),
-                          Text("Posgrado", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                          Image.asset('assets/logo1.png', width: 130,),
+                          //Icon(Icons.school, color: Colors.white, size: 40),
+                          //Text("Posgrado", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
