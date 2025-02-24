@@ -2,11 +2,12 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
-import 'package:postgrado/Feacture/Home/Presentacion/Page/CustomAppBar.dart';
-import 'package:postgrado/Feacture/Home/Presentacion/Page/drawer.dart';
+import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/CustomAppBar.dart';
+import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/drawer.dart';
 
-
+@RoutePage()
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -103,14 +104,14 @@ class _ViewState extends State<Home> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.lock_outline_rounded, size: 70, color: Colors.blueGrey[700]),
+                  Icon(Icons.lock_outline_rounded, size: 70, color: Colors.black12),
                   SizedBox(height: 15),
                   Text(
                     _token,
                     style: TextStyle(
                       fontSize: 34,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: Color(0xFF4E0000),
                       fontFamily: 'Courier',
                       letterSpacing: 2.0,
                     ),
@@ -121,7 +122,7 @@ class _ViewState extends State<Home> {
                     child: ElevatedButton(
                       onPressed: _isGeneratingToken ? null : _generateToken,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF0154A5),
+                        backgroundColor: Color(0xFF00366C),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                         padding: EdgeInsets.symmetric(vertical: 14),
                         elevation: 4,

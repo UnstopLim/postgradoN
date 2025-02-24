@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:postgrado/Core/Navigator/AppRouter.dart';
 import 'package:postgrado/Feacture/Home/Presentacion/Page/Home.dart';
-import 'package:postgrado/Feacture/Home/Presentacion/Page/snap.dart';
-import 'package:postgrado/Feacture/Login/Presentacion/Page/Login.dart';
-import 'package:postgrado/Feacture/Perfil/presentacion/page/Perfil.dart';
-import 'package:postgrado/Feacture/REcuperar/presentacion/page/Recuperar.dart';
 
+import 'package:postgrado/Feacture/Login/Presentacion/Page/Login.dart';
 
 
 
@@ -28,7 +25,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       //routerConfig: _app_router.config(),
-      home: Perfil(),
+      home: Home(),
     );
   }
 }

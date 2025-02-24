@@ -1,6 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
 
 class CustomDrawer extends StatelessWidget {
   @override
@@ -45,12 +47,13 @@ class CustomDrawer extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                DrawerItem(icon: Icons.dashboard, text: "Dashboard"),
-                DrawerItem(icon: Icons.person, text: "Perfil"),
-                DrawerItem(icon: Icons.settings, text: "Configuración"),
-                DrawerItem(icon: Icons.help_outline, text: "Ayuda"),
+
+                DrawerItem(icon: Icons.person, text: "Perfil",onTab: (){ context.router.push(Perfil()); }),
+                DrawerItem(icon: Icons.dashboard, text: "Token",onTab: (){ context.router.push(Home()); }),
+                DrawerItem(icon: Icons.settings, text: "Cambiar la contraseña",onTab: (){ context.router.push(Perfil()); }),
+                DrawerItem(icon: Icons.help_outline, text: "Ayuda",onTab: (){ context.router.push(Perfil()); }),
                 Divider(),
-                DrawerItem(icon: Icons.logout, text: "Cerrar sesión"),
+                DrawerItem(icon: Icons.logout, text: "Cerrar sesión",onTab: (){ context.router.push(Login()); }),
               ],
             ),
           ),
@@ -63,8 +66,9 @@ class CustomDrawer extends StatelessWidget {
 class DrawerItem extends StatelessWidget {
   final IconData icon;
   final String text;
+  final VoidCallback onTab;
 
-  DrawerItem({required this.icon, required this.text});
+  DrawerItem({required this.icon, required this.text,required this.onTab});
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +76,7 @@ class DrawerItem extends StatelessWidget {
       leading: Icon(icon, color: Colors.blue.shade900, size: 28),
       title: Text(text,
           style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500)),
-      onTap: () {},
+      onTap: () { onTab();},
     );
   }
 }

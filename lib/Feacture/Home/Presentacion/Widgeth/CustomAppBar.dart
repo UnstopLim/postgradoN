@@ -14,8 +14,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 30,
+                  color: Colors.transparent.withOpacity(0.1),
+                  blurRadius: 100,
                   spreadRadius: 0,
                   offset: Offset(0, 0),
                 ),
@@ -32,7 +32,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF006FD8), Color(0xFF002E5A)],
+                colors: [Color(0xFF400009), Color(0xFF002F53), Color(0xFF001E39)],
               ),
             ),
             child: Column(

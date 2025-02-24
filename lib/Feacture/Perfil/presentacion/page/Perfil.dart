@@ -1,9 +1,10 @@
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:postgrado/Feacture/Home/Presentacion/Page/CustomAppBar.dart';
-import 'package:postgrado/Feacture/Home/Presentacion/Page/drawer.dart';
+import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/CustomAppBar.dart';
+import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/drawer.dart';
 
-
+@RoutePage()
 class Perfil extends StatefulWidget {
   const Perfil({super.key});
 
@@ -17,9 +18,9 @@ class _PerfilState extends State<Perfil> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey, // Asociamos la clave al Scaffold
+      key: _scaffoldKey,
       appBar: CustomAppBar(),
-      drawer: CustomDrawer(), // Drawer personalizado
+      drawer: CustomDrawer(),
       backgroundColor: Color(0xFFDDDDDD),
       body: SingleChildScrollView(
         child: Padding(
@@ -27,15 +28,12 @@ class _PerfilState extends State<Perfil> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Avatar del usuario
               CircleAvatar(
                 radius: 60,
                 backgroundColor: Colors.white,
                 backgroundImage: AssetImage('assets/profile.png'), // Imagen del usuario
               ),
               const SizedBox(height: 15),
-
-              // Nombre del usuario
               Text(
                 "Juan Carlos Pérez",
                 style: TextStyle(
@@ -52,8 +50,6 @@ class _PerfilState extends State<Perfil> {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Tarjetas de información personal
               _buildInfoCard(Icons.perm_identity, "CI", "12345678"),
               _buildInfoCard(Icons.person, "Nombre", "Juan Carlos"),
               _buildInfoCard(Icons.person_outline, "Apellidos", "Pérez López"),
@@ -66,7 +62,6 @@ class _PerfilState extends State<Perfil> {
     );
   }
 
-  // Widget para mostrar información en tarjetas elegantes
   Widget _buildInfoCard(IconData icon, String title, String value) {
     return Card(
       elevation: 3,

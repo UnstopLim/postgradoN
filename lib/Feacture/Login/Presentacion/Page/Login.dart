@@ -40,7 +40,7 @@ class _LoginDaoState extends State<Login> {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Color(0xFF006FD8), Color(0xFF002E5A)], // Azul oscuro a azul
+                      colors: [Color(0xFF001630), Color(0xFF0072D8)], // Azul oscuro a azul
                     ),
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(150),
@@ -48,7 +48,6 @@ class _LoginDaoState extends State<Login> {
                     ),
                   ),
                 ),
-                // Imagen subida más arriba
                 Positioned(
                   top: isLandscape ? screenHeight * 0.11 : screenHeight * 0.11, // Ajuste para subir más la imagen
                   left: 0,
@@ -90,7 +89,7 @@ class _LoginDaoState extends State<Login> {
                             labelText: "E-Mail",
                             border: OutlineInputBorder(),
                             filled: true,
-                            fillColor: Colors.white.withOpacity(0.1), // Fondo cuando no está enfocado
+                            fillColor: Colors.white.withOpacity(0.1),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.black, width: 2.0), // Borde negro cuando está enfocado
                               borderRadius: BorderRadius.circular(8),
@@ -128,7 +127,8 @@ class _LoginDaoState extends State<Login> {
                           ),
                         ),
                         SizedBox(height: screenHeight * 0.03),
-                        Text("¿Olvidaste tu contraseña?", style: TextStyle(fontSize: screenWidth * 0.04)),
+                        TextButton(onPressed:() {context.router.push(Recuperar());}, child: Text("¿Olvidaste tu contraseña?",style: TextStyle(fontSize: screenWidth * 0.04,color: Color(
+                            0xFF000407), fontWeight: FontWeight.bold))),
                         SizedBox(height: screenHeight * 0.03),
                       ],
                     ),
