@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animate_do/animate_do.dart';
 
-
 class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -46,12 +45,12 @@ class CustomDrawer extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                SlideInLeft(child: DrawerItem(icon: Icons.dashboard, text: "Dashboard")),
-                SlideInLeft(child: DrawerItem(icon: Icons.person, text: "Perfil")),
-                SlideInLeft(child: DrawerItem(icon: Icons.settings, text: "Configuración")),
-                SlideInLeft(child: DrawerItem(icon: Icons.help_outline, text: "Ayuda")),
+                DrawerItem(icon: Icons.dashboard, text: "Dashboard"),
+                DrawerItem(icon: Icons.person, text: "Perfil"),
+                DrawerItem(icon: Icons.settings, text: "Configuración"),
+                DrawerItem(icon: Icons.help_outline, text: "Ayuda"),
                 Divider(),
-                SlideInLeft(child: DrawerItem(icon: Icons.logout, text: "Cerrar sesión")),
+                DrawerItem(icon: Icons.logout, text: "Cerrar sesión"),
               ],
             ),
           ),
@@ -70,43 +69,10 @@ class DrawerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: ZoomIn(child: Icon(icon, color: Colors.blue.shade900, size: 28)),
+      leading: Icon(icon, color: Colors.blue.shade900, size: 28),
       title: Text(text,
           style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500)),
       onTap: () {},
     );
   }
 }
-
-class HeaderClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.lineTo(0, size.height - 28);
-    path.quadraticBezierTo(size.width / 2, size.height + 28, size.width, size.height - 28);
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
-}
-
-
-class YellowHeaderClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.lineTo(0, size.height - 34);
-    path.quadraticBezierTo(size.width / 2, size.height + 25, size.width, size.height - 35);
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
-}
-
-

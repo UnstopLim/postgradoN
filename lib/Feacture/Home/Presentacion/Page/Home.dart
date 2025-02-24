@@ -1,8 +1,11 @@
-import 'dart:async';
 
-import 'package:auto_route/auto_route.dart';
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:postgrado/Feacture/Home/Presentacion/Page/CustomAppBar.dart';
 import 'package:postgrado/Feacture/Home/Presentacion/Page/drawer.dart';
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,112 +15,127 @@ class Home extends StatefulWidget {
 }
 
 class _ViewState extends State<Home> {
-  int token = 48556;
-  Duration duration = const Duration(minutes: 57, seconds: 13);
-  Timer? timer;
+  int _seconds = 60;
+  String _token = "123456";
+  bool _isGeneratingToken = false;
 
   @override
   void initState() {
     super.initState();
-    startTimer();
+    _startTimer();
   }
 
-  void startTimer() {
-    timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (duration.inSeconds > 0) {
-        setState(() {
-          duration -= const Duration(seconds: 1);
-        });
-      }
+  void _startTimer() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_seconds > 0) {
+          _seconds--;
+        } else {
+          _generateToken();
+          _seconds = 60;
+        }
+      });
+    });
+  }
+
+  void _generateToken() {
+    setState(() {
+      _isGeneratingToken = true;
+    });
+
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        _token = (Random().nextInt(900000) + 100000).toString();
+        _isGeneratingToken = false;
+      });
     });
   }
 
   @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String timeString = "${twoDigits(duration.inMinutes)}:${twoDigits(duration.inSeconds.remainder(60))}";
-
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue.shade900,
-      ),
-      body: Stack(
+      appBar: CustomAppBar(),
+      backgroundColor: Color(0xFFDDDDDD),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Column(
-            children: [
-              Stack(
+          SizedBox(height: 40),
+          SizedBox(height: 8),
+          Text(
+            "Tiempo restante",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 6),
+          Text(
+            "00:${_seconds.toString().padLeft(2, '0')}",
+            style: TextStyle(
+              fontSize: 42,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              fontFamily: 'RobotoMono',
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 30),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 40),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  ClipPath(
-                    clipper: YellowHeaderClipper(),
-                    child: Container(
-                      height: 140,
-                      width: double.infinity,
-                      color: Colors.yellow.shade700,
+                  Icon(Icons.lock_outline_rounded, size: 70, color: Colors.blueGrey[700]),
+                  SizedBox(height: 15),
+                  Text(
+                    _token,
+                    style: TextStyle(
+                      fontSize: 34,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                      fontFamily: 'Courier',
+                      letterSpacing: 2.0,
                     ),
                   ),
-                  ClipPath(
-                    clipper: HeaderClipper(),
-                    child: Container(
-                      height: 130,
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Color(0xFF005EBC), Color(0xFF002244)],
-                        ),
+                  SizedBox(height: 25),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isGeneratingToken ? null : _generateToken,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF0154A5),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        elevation: 4,
+                        shadowColor: Colors.blueAccent.withOpacity(0.3),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset('assets/logo1.png', width: 130,),
-                          //Icon(Icons.school, color: Colors.white, size: 40),
-                          //Text("Posgrado", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-                        ],
+                      child: Text(
+                        _isGeneratingToken ? "Generando..." : "Generar Token",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              Text("Tiempo de token", style: TextStyle(fontSize: 28, color: Colors.black )),
-              const SizedBox(height: 10),
-              Text(timeString, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black)),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(50),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black26, blurRadius: 5, spreadRadius: 5),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    const Icon(Icons.lock, size: 60, color: Colors.blueGrey),
-                    const SizedBox(height: 10),
-                    Text("$token", style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black)),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade800,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                      ),
-                      onPressed: () {},
-                      child: const Text("Generar token", style: TextStyle(color: Colors.white, fontSize: 16)),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
@@ -125,11 +143,3 @@ class _ViewState extends State<Home> {
     );
   }
 }
-
-
-
-
-
-
-
-
