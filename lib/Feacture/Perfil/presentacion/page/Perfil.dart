@@ -13,59 +13,109 @@ class Perfil extends StatefulWidget {
 }
 
 class _PerfilState extends State<Perfil> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // Clave para controlar el Drawer
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: CustomAppBar(),
       drawer: CustomDrawer(),
       backgroundColor: Color(0xFFDDDDDD),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 60,
-                backgroundColor: Colors.white,
-                backgroundImage: AssetImage('assets/profile.png'), // Imagen del usuario
-              ),
-              const SizedBox(height: 15),
-              Text(
-                "Juan Carlos Pérez",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              Text(
-                "Ingeniero de Sistemas",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildInfoCard(Icons.perm_identity, "CI", "12345678"),
-              _buildInfoCard(Icons.person, "Nombre", "Juan Carlos"),
-              _buildInfoCard(Icons.person_outline, "Apellidos", "Pérez López"),
-              _buildInfoCard(Icons.phone, "Celular", "+591 77788899"),
-              _buildInfoCard(Icons.email, "Correo", "juan.perez@email.com"),
-            ],
+      body: Stack(
+        children: [
+          // Imagen de fondo
+          Positioned.fill(
+            child: Image.asset(
+              "assets/edificio.png",
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
+
+          // Contenido principal
+          SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(screenSize.width * 0.05),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: screenSize.height * 0.05),
+
+                  // Foto de perfil
+                  CircleAvatar(
+                    radius: screenSize.width * 0.15,
+                    backgroundColor: Colors.white,
+                    backgroundImage: AssetImage('assets/profile.png'),
+                  ),
+                  SizedBox(height: screenSize.height * 0.02),
+
+                  // Contenedor blanco para el nombre y profesión
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenSize.height * 0.02,
+                      horizontal: screenSize.width * 0.05,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Juan Carlos Pérez",
+                          style: TextStyle(
+                            fontSize: screenSize.width * 0.06,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: screenSize.height * 0.005),
+                        Text(
+                          "Ingeniero de Sistemas",
+                          style: TextStyle(
+                            fontSize: screenSize.width * 0.04,
+                            color: Colors.grey[700],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: screenSize.height * 0.03),
+
+                  // Tarjetas de información
+                  _buildInfoCard(Icons.perm_identity, "CI", "12345678"),
+                  _buildInfoCard(Icons.person, "Nombre", "Juan Carlos"),
+                  _buildInfoCard(Icons.person_outline, "Apellidos", "Pérez López"),
+                  _buildInfoCard(Icons.phone, "Celular", "+591 77788899"),
+                  _buildInfoCard(Icons.email, "Correo", "juan.perez@email.com"),
+
+                  SizedBox(height: screenSize.height * 0.1),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildInfoCard(IconData icon, String title, String value) {
     return Card(
-      elevation: 3,
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 4,
+      margin: EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
         leading: Icon(icon, color: Color(0xFF006FD8), size: 28),
