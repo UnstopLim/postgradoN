@@ -6,6 +6,7 @@ import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
 
 
 
+
 @AutoRouterConfig()
 class AppRouter extends $AppRouter {
   @override
@@ -13,6 +14,7 @@ class AppRouter extends $AppRouter {
     AutoRoute(page: Login.page, initial: true),
     AutoRoute(page: Recuperar.page),
     AutoRoute(page: Home.page),
-    AutoRoute(page: Perfil.page)
+    AutoRoute(page: Perfil.page),
+    AutoRoute(page: Cambio.page)
   ];
 }

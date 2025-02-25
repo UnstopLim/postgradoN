@@ -9,30 +9,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.transparent.withOpacity(0.1),
-                  blurRadius: 100,
-                  spreadRadius: 0,
-                  offset: Offset(0, 0),
-                ),
-              ],
-            ),
-          ),
-        ),
         ClipPath(
           clipper: CurvedAppBarClipper(),
           child: Container(
-            height: 210,
+            height: 170,
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF400009), Color(0xFF002F53), Color(0xFF001E39)],
+                colors: [Color(0xFF250006), Color(0xFF002F53), Color(0xFF001E39)],
               ),
             ),
             child: Column(
@@ -45,6 +31,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         AppBar(
           backgroundColor: Colors.transparent,
+          iconTheme: IconThemeData(color: Colors.white),
           elevation: 0,
           centerTitle: true,
         ),

@@ -5,6 +5,7 @@ import 'package:postgrado/Feacture/Home/Presentacion/Page/Home.dart';
 
 import 'package:postgrado/Feacture/Login/Presentacion/Page/Login.dart';
 import 'package:postgrado/Feacture/Perfil/presentacion/page/Perfil.dart';
+import 'package:postgrado/Feacture/REcuperar/presentacion/page/Recuperar.dart';
 
 
 
@@ -21,13 +22,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      //routerConfig: _app_router.config(),
-      home: Cambio(),
+      routerConfig: _app_router.config(),
+      //home: Login(),
     );
   }
 }

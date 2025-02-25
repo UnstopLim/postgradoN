@@ -40,7 +40,8 @@ class _LoginDaoState extends State<Login> {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Color(0xFF001630), Color(0xFF0072D8)], // Azul oscuro a azul
+                      colors: [Color(0xFF230008), Color(0xFF00142B),Color(
+                          0xFF00549F)], // Azul oscuro a azul
                     ),
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(150),
@@ -80,14 +81,17 @@ class _LoginDaoState extends State<Login> {
                         SizedBox(height: screenHeight * 0.03),
                         Text(
                           "Bienvenido",
-                          style: TextStyle(fontSize: screenWidth * 0.07, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: screenWidth * 0.07, fontWeight: FontWeight.bold,fontFamily: 'Roboto'),
                         ),
-                        SizedBox(height: screenHeight * 0.05),
+                        Text("A posgrado Token",style: TextStyle(color: Color(
+                            0xFF700015),fontWeight: FontWeight.bold,fontSize: screenWidth * 0.04)
+                        ),
+                        SizedBox(height: screenHeight * 0.04),
                         TextField(
                           controller: num1,
                           decoration: InputDecoration(
                             labelText: "E-Mail",
-                            border: OutlineInputBorder(),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.1),
                             focusedBorder: OutlineInputBorder(
@@ -102,7 +106,7 @@ class _LoginDaoState extends State<Login> {
                           obscureText: true,
                           decoration: InputDecoration(
                             labelText: "Password",
-                            border: OutlineInputBorder(),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.2), // Fondo cuando no está enfocado
                             focusedBorder: OutlineInputBorder(
@@ -118,7 +122,7 @@ class _LoginDaoState extends State<Login> {
                           },
                           child: Text(" Log in", style: TextStyle(fontSize: screenWidth * 0.05, color: Colors.white)),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue.shade800,
+                            backgroundColor: Color(0xFF002B5E),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                             padding: EdgeInsets.symmetric(
                               vertical: screenHeight * 0.015,
@@ -128,7 +132,7 @@ class _LoginDaoState extends State<Login> {
                         ),
                         SizedBox(height: screenHeight * 0.03),
                         TextButton(onPressed:() {context.router.push(Recuperar());}, child: Text("¿Olvidaste tu contraseña?",style: TextStyle(fontSize: screenWidth * 0.04,color: Color(
-                            0xFF000407), fontWeight: FontWeight.bold))),
+                            0xFF6A0000), fontWeight: FontWeight.bold))),
                         SizedBox(height: screenHeight * 0.03),
                       ],
                     ),

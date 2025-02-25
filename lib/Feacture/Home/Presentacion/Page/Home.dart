@@ -69,7 +69,6 @@ class _ViewState extends State<Home> {
             ),
           ),
 
-          // Contenido principal
           SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
@@ -78,8 +77,6 @@ class _ViewState extends State<Home> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: screenSize.height * 0.05),
-
-                  // Contenedor blanco para el temporizador
                   Container(
                     padding: EdgeInsets.symmetric(
                       vertical: screenSize.height * 0.015,
@@ -147,14 +144,14 @@ class _ViewState extends State<Home> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.lock_outline_rounded, size: screenSize.width * 0.15, color: Colors.black12),
+                        Icon(Icons.lock_outline_rounded, size: screenSize.width * 0.15, color: Colors.grey),
                         SizedBox(height: screenSize.height * 0.02),
                         Text(
                           _token,
                           style: TextStyle(
                             fontSize: screenSize.width * 0.08,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF4E0000),
+                            color: Color(0xFF6E0000),
                             fontFamily: 'Courier',
                             letterSpacing: 2.0,
                           ),
@@ -192,6 +189,7 @@ class _ViewState extends State<Home> {
           ),
         ],
       ),
+
       drawer: CustomDrawer(),
     );
   }

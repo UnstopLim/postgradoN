@@ -1,7 +1,9 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/CustomAppBar.dart';
+import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/drawer.dart';
 
-
+@RoutePage()
 class Cambio extends StatefulWidget {
   const Cambio({super.key});
 
@@ -21,6 +23,7 @@ class _CambioState extends State<Cambio> {
 
     return Scaffold(
       appBar: CustomAppBar(),
+      drawer: CustomDrawer(),
       backgroundColor: Color(0xFFDDDDDD),
       body: Stack(
         children: [
@@ -105,8 +108,6 @@ class _CambioState extends State<Cambio> {
                           });
                         }),
                         SizedBox(height: screenSize.height * 0.05),
-
-                        // Botón de cambiar contraseña
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -162,7 +163,7 @@ class _CambioState extends State<Cambio> {
         fillColor: Colors.white,
         suffixIcon: IconButton(
           icon: Icon(isObscure ? Icons.visibility_off : Icons.visibility),
-          onPressed: toggleVisibility, // Ahora funciona correctamente
+          onPressed: toggleVisibility,
         ),
       ),
       validator: (value) {

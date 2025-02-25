@@ -26,15 +26,12 @@ class _PerfilState extends State<Perfil> {
       backgroundColor: Color(0xFFDDDDDD),
       body: Stack(
         children: [
-          // Imagen de fondo
           Positioned.fill(
             child: Image.asset(
               "assets/edificio.png",
               fit: BoxFit.cover,
             ),
           ),
-
-          // Contenido principal
           SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.all(screenSize.width * 0.05),
@@ -43,7 +40,6 @@ class _PerfilState extends State<Perfil> {
                 children: [
                   SizedBox(height: screenSize.height * 0.05),
 
-                  // Foto de perfil
                   CircleAvatar(
                     radius: screenSize.width * 0.15,
                     backgroundColor: Colors.white,
@@ -51,11 +47,10 @@ class _PerfilState extends State<Perfil> {
                   ),
                   SizedBox(height: screenSize.height * 0.02),
 
-                  // Contenedor blanco para el nombre y profesión
                   Container(
                     padding: EdgeInsets.symmetric(
                       vertical: screenSize.height * 0.02,
-                      horizontal: screenSize.width * 0.05,
+                      horizontal: screenSize.width * 0.19,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -72,7 +67,7 @@ class _PerfilState extends State<Perfil> {
                     child: Column(
                       children: [
                         Text(
-                          "Juan Carlos Pérez",
+                          "Perfil",
                           style: TextStyle(
                             fontSize: screenSize.width * 0.06,
                             fontWeight: FontWeight.bold,
@@ -81,14 +76,6 @@ class _PerfilState extends State<Perfil> {
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: screenSize.height * 0.005),
-                        Text(
-                          "Ingeniero de Sistemas",
-                          style: TextStyle(
-                            fontSize: screenSize.width * 0.04,
-                            color: Colors.grey[700],
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
                       ],
                     ),
                   ),
@@ -118,7 +105,7 @@ class _PerfilState extends State<Perfil> {
       margin: EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
-        leading: Icon(icon, color: Color(0xFF006FD8), size: 28),
+        leading: Icon(icon, color: Color(0xFF004388), size: 28),
         title: Text(
           title,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black54),

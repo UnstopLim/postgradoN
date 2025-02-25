@@ -14,67 +14,112 @@ class _RecuperarContrasenaState extends State<Recuperar> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: CustomAppBar(),
       backgroundColor: Colors.grey[200],
-      body: SingleChildScrollView(
-         child:  Padding(
-           padding: const EdgeInsets.all(20),
-           child: Column(
-             crossAxisAlignment: CrossAxisAlignment.center,
-             children: [
-               Icon(Icons.lock_reset_rounded, size: 100, color: Color(0xFF0056A6)),
-               const SizedBox(height: 15),
-               Text(
-                 "¿Olvidaste tu contraseña?",
-                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
-               ),
-               const SizedBox(height: 10),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              "assets/edificio.png",
+              fit: BoxFit.fill,
+            ),
+          ),
+          SingleChildScrollView(
+            child:  Padding(
 
-               Text(
-                 "Ingresa tu correo y te enviaremos un enlace para recuperar tu cuenta.",
-                 textAlign: TextAlign.center,
-                 style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-               ),
-               const SizedBox(height: 20),
-               TextField(
-                 controller: num1,
-                 obscureText: true,
-                 decoration: InputDecoration(
-                   labelText: "Correo electronico",
-                   border: OutlineInputBorder(),
-                   filled: true,
-                   fillColor: Colors.white.withOpacity(0.2),
-                   focusedBorder: OutlineInputBorder(
-                     borderSide: BorderSide(color: Colors.black, width: 2.0), // Borde negro cuando está enfocado
-                     borderRadius: BorderRadius.circular(52),
-                   ),
-                 ),
-               ),
-               const SizedBox(height: 20),
-               ElevatedButton(
-                 onPressed: () {
-                 },
-                 style: ElevatedButton.styleFrom(
-                   backgroundColor: Color(0xFF0056A8),
-                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                 ),
-                 child: Text("Enviar enlace", style: TextStyle(fontSize: 18, color: Colors.white)),
-               ),
-               const SizedBox(height: 20),
-               TextButton(
-                 onPressed: () {
-                   Navigator.pop(context);
-                 },
-                 child: Text(
-                   "Regresar al inicio de sesión",
-                   style: TextStyle(fontSize: 16, color: Color(0xFF005AAA), fontWeight: FontWeight.bold),
-                 ),
-               ),
-             ],
-           ),
-         ),
+              padding: const EdgeInsets.all(20),
+
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.lock_reset_rounded, size: 100, color: Color(0xFF0056A6)),
+                  const SizedBox(height: 15),
+                  //este el contenedor de los datos
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenSize.height * 0.02,
+                      horizontal: screenSize.width * 0.10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          "¿Olvidaste tu contraseña?",
+                          style: TextStyle(
+                            fontSize: screenSize.width * 0.05,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: screenSize.height * 0.010),
+                        Text(
+                          "Ingresa tu correo y te enviaremos un enlace para recuperar tu cuenta.",
+                          style: TextStyle(
+                            fontSize: screenSize.width * 0.04,
+                            color: Colors.grey[700],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: num1,
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      labelText: "Correo electronico",
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                      filled: true,
+                      fillColor: Colors.white,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 2.0), // Borde negro cuando está enfocado
+                        borderRadius: BorderRadius.circular(52),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF003D78),
+                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: Text("Enviar enlace", style: TextStyle(fontSize: 18, color: Colors.white)),
+                  ),
+                  const SizedBox(height: 20),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "Regresar al inicio de sesión",
+                      style: TextStyle(fontSize: 16, color: Color(0xFF00294C), fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+
+        ],
       )
     );
   }

@@ -14,7 +14,7 @@ class CustomDrawer extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF005EBC), Color(0xFF002244)],
+                colors: [Color(0xFF005EBC), Color(0xFF002244), Color(0xFF440006)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -50,7 +50,7 @@ class CustomDrawer extends StatelessWidget {
 
                 DrawerItem(icon: Icons.person, text: "Perfil",onTab: (){ context.router.push(Perfil()); }),
                 DrawerItem(icon: Icons.dashboard, text: "Token",onTab: (){ context.router.push(Home()); }),
-                DrawerItem(icon: Icons.settings, text: "Cambiar la contraseña",onTab: (){ context.router.push(Perfil()); }),
+                DrawerItem(icon: Icons.settings, text: "Cambiar la contraseña",onTab: (){ context.router.push(Cambio()); }),
                 DrawerItem(icon: Icons.help_outline, text: "Ayuda",onTab: (){ context.router.push(Perfil()); }),
                 Divider(),
                 DrawerItem(icon: Icons.logout, text: "Cerrar sesión",onTab: (){ context.router.push(Login()); }),
