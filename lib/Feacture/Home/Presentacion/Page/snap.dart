@@ -17,15 +17,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   void initState() {
     super.initState();
 
-    // Agregar un post-frame callback para asegurar que la animación empieza correctamente
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAnimation();
     });
 
-    // Controlador de la animación
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2), // Reducido para mejor rendimiento
+      duration: const Duration(seconds: 3),
     );
 
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
@@ -36,9 +34,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       _visible = true;
     });
 
-    _controller.forward(); // Inicia la animación
-
-    // Cambia de pantalla después de 3 segundos
+    _controller.forward();
     Future.delayed(const Duration(seconds: 4), () {
       if (mounted) {
         context.pushRoute(Login());
@@ -61,9 +57,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF005B97),
-              Color(0xFF001D3A),
-              Color(0xFF005B97),
+              Color(0xFF002C47),
+              Color(0xFF001225),
+              Color(0xFF00375A),
             ],
             stops: [0.0, 0.5, 1.0],
           ),
@@ -73,9 +69,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               FadeTransition(
-                opacity: _animation, // Opacidad animada con mejor rendimiento
+                opacity: _animation,
                 child: ScaleTransition(
-                  scale: _animation, // Escalado animado eficiente
+                  scale: _animation,
                   child: Image.asset(
                     'assets/logo1.png',
                     width: 200,
@@ -94,6 +90,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             ],
           ),
         ),
+
       ),
     );
   }

@@ -71,12 +71,12 @@ class _ViewState extends State<Home> {
 
           SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
+              padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.02),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: screenSize.height * 0.05),
+                  SizedBox(height: screenSize.height * 0.01),
                   Container(
                     padding: EdgeInsets.symmetric(
                       vertical: screenSize.height * 0.015,
@@ -84,7 +84,7 @@ class _ViewState extends State<Home> {
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black12,
@@ -120,18 +120,16 @@ class _ViewState extends State<Home> {
                     ),
                   ),
 
-                  SizedBox(height: screenSize.height * 0.05),
-
-                  // Contenedor del token
+                  SizedBox(height: screenSize.height * 0.02),
                   Container(
                     width: double.infinity,
                     padding: EdgeInsets.symmetric(
-                      horizontal: screenSize.width * 0.08,
+                      horizontal: screenSize.width * 0.05,
                       vertical: screenSize.height * 0.05,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(40),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black12,
@@ -144,17 +142,24 @@ class _ViewState extends State<Home> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.lock_outline_rounded, size: screenSize.width * 0.15, color: Colors.grey),
+                        Image.asset( "assets/seguridad.png", width: screenSize.width * 0.25 , fit: BoxFit.contain,),
                         SizedBox(height: screenSize.height * 0.02),
+                        Text("Token generado",style: TextStyle(fontSize: screenSize.width*0.05,fontWeight: FontWeight.bold),),
                         Text(
                           _token,
                           style: TextStyle(
-                            fontSize: screenSize.width * 0.08,
+                            fontSize: screenSize.width * 0.1,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF6E0000),
                             fontFamily: 'Courier',
                             letterSpacing: 2.0,
                           ),
+                        ),
+                        Row(
+                          children: [
+                            Icon(Icons.copy ,color: Colors.black,),
+                            TextButton(onPressed: (){} , child: Text(" Copiar",style:  TextStyle(color: Colors.black,fontWeight: FontWeight.bold),)),
+                          ],
                         ),
                         SizedBox(height: screenSize.height * 0.03),
                         SizedBox(
@@ -165,11 +170,11 @@ class _ViewState extends State<Home> {
                               backgroundColor: Color(0xFF00366C),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                               padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.02),
-                              elevation: 4,
+                              elevation: 0,
                               shadowColor: Colors.blueAccent.withOpacity(0.3),
                             ),
                             child: Text(
-                              _isGeneratingToken ? "Generando..." : "Generar Token",
+                              _isGeneratingToken ? "Generando..." : "Actulizar Token",
                               style: TextStyle(
                                 fontSize: screenSize.width * 0.05,
                                 fontWeight: FontWeight.bold,

@@ -40,8 +40,8 @@ class _LoginDaoState extends State<Login> {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Color(0xFF230008), Color(0xFF00142B),Color(
-                          0xFF00549F)], // Azul oscuro a azul
+                      colors: [Color(0xFF230000), Color(0xFF002A55),Color(
+                          0xFF00305E)], // Azul oscuro a azul
                     ),
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(150),
@@ -70,7 +70,7 @@ class _LoginDaoState extends State<Login> {
                     padding: EdgeInsets.all(screenWidth * 0.05),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(color: Colors.black, blurRadius: 2, offset: Offset(0, 5)),
                       ],
@@ -122,17 +122,17 @@ class _LoginDaoState extends State<Login> {
                           },
                           child: Text(" Log in", style: TextStyle(fontSize: screenWidth * 0.05, color: Colors.white)),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF002B5E),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                            backgroundColor: Color(0xFF00397C),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(27)),
                             padding: EdgeInsets.symmetric(
-                              vertical: screenHeight * 0.015,
-                              horizontal: screenWidth * 0.2,
+                              vertical: screenHeight * 0.00002,
+                              horizontal: screenWidth * 0.3,
                             ),
                           ),
                         ),
                         SizedBox(height: screenHeight * 0.03),
                         TextButton(onPressed:() {context.router.push(Recuperar());}, child: Text("¿Olvidaste tu contraseña?",style: TextStyle(fontSize: screenWidth * 0.04,color: Color(
-                            0xFF6A0000), fontWeight: FontWeight.bold))),
+                            0xFF000000), fontWeight: FontWeight.bold))),
                         SizedBox(height: screenHeight * 0.03),
                       ],
                     ),

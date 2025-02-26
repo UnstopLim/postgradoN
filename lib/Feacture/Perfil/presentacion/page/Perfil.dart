@@ -38,47 +38,14 @@ class _PerfilState extends State<Perfil> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: screenSize.height * 0.05),
+                  SizedBox(height: screenSize.height * 0.02),
 
                   CircleAvatar(
                     radius: screenSize.width * 0.15,
                     backgroundColor: Colors.white,
-                    backgroundImage: AssetImage('assets/profile.png'),
+                    backgroundImage: AssetImage('assets/editar-perfil.png'),
                   ),
-                  SizedBox(height: screenSize.height * 0.02),
 
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: screenSize.height * 0.02,
-                      horizontal: screenSize.width * 0.19,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 8,
-                          spreadRadius: 2,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Perfil",
-                          style: TextStyle(
-                            fontSize: screenSize.width * 0.06,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(height: screenSize.height * 0.005),
-                      ],
-                    ),
-                  ),
 
                   SizedBox(height: screenSize.height * 0.03),
 

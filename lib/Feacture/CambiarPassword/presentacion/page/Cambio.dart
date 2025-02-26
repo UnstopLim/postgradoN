@@ -27,15 +27,12 @@ class _CambioState extends State<Cambio> {
       backgroundColor: Color(0xFFDDDDDD),
       body: Stack(
         children: [
-          // Imagen de fondo
           Positioned.fill(
             child: Image.asset(
               "assets/edificio.png",
               fit: BoxFit.cover,
             ),
           ),
-
-          // Contenido
           SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.08),
@@ -43,10 +40,8 @@ class _CambioState extends State<Cambio> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: screenSize.height * 0.1),
-
-                  // Título
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 25),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
