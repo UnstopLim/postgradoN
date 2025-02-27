@@ -6,9 +6,9 @@ import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
 class AppRouter extends $AppRouter {
   @override
   List<AutoRoute> get routes => [
-    AutoRoute(page: SplashRoute.page, initial: true),
+   // AutoRoute(page: SplashRoute.page, initial: true),
     AutoRoute(page: Recuperar.page),
-    AutoRoute(page: Login.page),
+    AutoRoute(page: Login.page, initial: true),
     AutoRoute(page: Home.page),
     AutoRoute(page: Perfil.page),
     AutoRoute(page: Cambio.page)

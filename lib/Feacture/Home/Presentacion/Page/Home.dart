@@ -71,16 +71,20 @@ class _ViewState extends State<Home> {
 
           SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.02),
+              padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.1), // Márgenes laterales más grandes
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: screenSize.height * 0.01),
+                  SizedBox(height: screenSize.height * 0.02),
+
+                  // Contenedor de Tiempo Restante
                   Container(
+                    constraints: BoxConstraints(
+                      maxWidth: 400, // Reduce el ancho máximo para que no se expanda tanto
+                    ),
                     padding: EdgeInsets.symmetric(
                       vertical: screenSize.height * 0.015,
-                      horizontal: screenSize.width * 0.08,
+                      horizontal: screenSize.width * 0.05,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -120,9 +124,13 @@ class _ViewState extends State<Home> {
                     ),
                   ),
 
-                  SizedBox(height: screenSize.height * 0.02),
+                  SizedBox(height: screenSize.height * 0.03),
+
+                  // Contenedor de Token
                   Container(
-                    width: double.infinity,
+                    constraints: BoxConstraints(
+                      maxWidth: 400, // Reduce el ancho máximo
+                    ),
                     padding: EdgeInsets.symmetric(
                       horizontal: screenSize.width * 0.05,
                       vertical: screenSize.height * 0.05,
@@ -142,9 +150,19 @@ class _ViewState extends State<Home> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset( "assets/seguridad.png", width: screenSize.width * 0.25 , fit: BoxFit.contain,),
+                        Image.asset(
+                          "assets/seguridad.png",
+                          width: screenSize.width * 0.25,
+                          fit: BoxFit.contain,
+                        ),
                         SizedBox(height: screenSize.height * 0.02),
-                        Text("Token generado",style: TextStyle(fontSize: screenSize.width*0.05,fontWeight: FontWeight.bold),),
+                        Text(
+                          "Token generado",
+                          style: TextStyle(
+                            fontSize: screenSize.width * 0.05,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         Text(
                           _token,
                           style: TextStyle(
@@ -156,9 +174,19 @@ class _ViewState extends State<Home> {
                           ),
                         ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.copy ,color: Colors.black,),
-                            TextButton(onPressed: (){} , child: Text(" Copiar",style:  TextStyle(color: Colors.black,fontWeight: FontWeight.bold),)),
+                            Icon(Icons.copy, color: Colors.black),
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                " Copiar",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                         SizedBox(height: screenSize.height * 0.03),
@@ -168,13 +196,17 @@ class _ViewState extends State<Home> {
                             onPressed: _isGeneratingToken ? null : _generateToken,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFF00366C),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                              padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.02),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                vertical: screenSize.height * 0.02,
+                              ),
                               elevation: 0,
                               shadowColor: Colors.blueAccent.withOpacity(0.3),
                             ),
                             child: Text(
-                              _isGeneratingToken ? "Generando..." : "Actulizar Token",
+                              _isGeneratingToken ? "Generando..." : "Actualizar Token",
                               style: TextStyle(
                                 fontSize: screenSize.width * 0.05,
                                 fontWeight: FontWeight.bold,

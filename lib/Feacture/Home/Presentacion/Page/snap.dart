@@ -11,33 +11,24 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  bool _visible = false;
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startAnimation();
-    });
-
+    // Iniciar la animación
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 2), // La animación dura 2 segundos
     );
 
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-  }
-
-  void _startAnimation() {
-    setState(() {
-      _visible = true;
-    });
-
     _controller.forward();
-    Future.delayed(const Duration(seconds: 4), () {
+
+    // Esperamos 3 segundos más y pasamos a la pantalla principal
+    Future.delayed(const Duration(seconds: 5), () {
       if (mounted) {
-        context.pushRoute(Login());
+        context.router.replace(Login()); // Transición al login
       }
     });
   }
@@ -56,41 +47,19 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF002C47),
-              Color(0xFF001225),
-              Color(0xFF00375A),
-            ],
+            colors: [Color(0xFF002C47), Color(0xFF001225), Color(0xFF00375A)], // Degradado de fondo
             stops: [0.0, 0.5, 1.0],
           ),
         ),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FadeTransition(
-                opacity: _animation,
-                child: ScaleTransition(
-                  scale: _animation,
-                  child: Image.asset(
-                    'assets/logo1.png',
-                    width: 200,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Versión',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-              const Text(
-                '1.0',
-                style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-            ],
+          child: ScaleTransition(
+            scale: _animation,
+            child: Image.asset(
+              'assets/logo1.png',
+              width: 200, // Tamaño del logo
+            ),
           ),
         ),
-
       ),
     );
   }
