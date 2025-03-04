@@ -1,9 +1,8 @@
-// custom_appbar.dart
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
-  Size get preferredSize => const Size.fromHeight(180);
+  Size get preferredSize => const Size.fromHeight(150);
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +12,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ClipPath(
           clipper: CurvedAppBarClipper(),
           child: Container(
-            height: 180,
+            height: 165, // Ajustamos la altura a 180 para que coincida con preferredSize
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -21,6 +20,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 end: Alignment.bottomCenter,
                 colors: [Color(0xFF3A0008), Color(0xFF00213A), Color(0xFF004C8F)],
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                  offset: Offset(0, 5),
+                ),
+              ],
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -45,12 +52,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 }
+
 class CurvedAppBarClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    path.lineTo(0, size.height - 40);
-    path.quadraticBezierTo(size.width / 2, size.height, size.width, size.height - 40);
+    path.lineTo(0, size.height - 50);
+    path.quadraticBezierTo(size.width / 2, size.height, size.width, size.height - 50);
     path.lineTo(size.width, 0);
     path.close();
     return path;

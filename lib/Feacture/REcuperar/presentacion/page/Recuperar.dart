@@ -8,6 +8,7 @@ class Recuperar extends StatefulWidget {
   @override
   State<Recuperar> createState() => _RecuperarContrasenaState();
 }
+
 class _RecuperarContrasenaState extends State<Recuperar> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController num1 = TextEditingController();
@@ -17,42 +18,36 @@ class _RecuperarContrasenaState extends State<Recuperar> {
     final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: CustomAppBar(),
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.white,  // Fondo blanco para la pantalla
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              "assets/edificio.png",
-              fit: BoxFit.fill,
+            child: Opacity(
+              opacity: 0.0,  // Hacemos que la imagen sea opaca
+              child: Image.asset(
+                "assets/edificio.png",
+                fit: BoxFit.fill,
+              ),
             ),
           ),
           SingleChildScrollView(
-            child:  Padding(
-
+            child: Padding(
               padding: const EdgeInsets.all(20),
-
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Icon(Icons.lock_reset_rounded, size: 100, color: Color(0xFF0056A6)),
                   const SizedBox(height: 15),
-                  //este el contenedor de los datos
+
+                  // Contenedor de los datos (ahora transparente)
                   Container(
                     padding: EdgeInsets.symmetric(
                       vertical: screenSize.height * 0.02,
                       horizontal: screenSize.width * 0.10,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.transparent,  // Fondo transparente
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 8,
-                          spreadRadius: 2,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
                     ),
                     child: Column(
                       children: [
@@ -79,6 +74,7 @@ class _RecuperarContrasenaState extends State<Recuperar> {
                   ),
 
                   const SizedBox(height: 20),
+                  // Campo de texto para el correo electrónico
                   TextField(
                     controller: num1,
                     obscureText: false,
@@ -86,7 +82,7 @@ class _RecuperarContrasenaState extends State<Recuperar> {
                       labelText: "Correo electronico",
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: Colors.white.withOpacity(0.2),  // Fondo transparente para los campos de texto
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black, width: 2.0), // Borde negro cuando está enfocado
                         borderRadius: BorderRadius.circular(52),
@@ -96,6 +92,7 @@ class _RecuperarContrasenaState extends State<Recuperar> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
+                      // Aquí iría la lógica para enviar el enlace
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF003D78),
@@ -118,17 +115,11 @@ class _RecuperarContrasenaState extends State<Recuperar> {
               ),
             ),
           )
-
         ],
-      )
+      ),
     );
   }
 }
-
-
-
-
-
 
 
 

@@ -1,233 +1,134 @@
-
 import 'dart:async';
 import 'dart:math';
-
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/CustomAppBar.dart';
 import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/drawer.dart';
+import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
 
 @RoutePage()
 class Home extends StatefulWidget {
   const Home({super.key});
 
   @override
-  State<Home> createState() => _ViewState();
+  State<Home> createState() => _HomeState();
 }
 
-class _ViewState extends State<Home> {
-  int _seconds = 60;
-  String _token = "123456";
-  bool _isGeneratingToken = false;
+class _HomeState extends State<Home> {
+  int _selectedIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _startTimer();
-  }
-
-  void _startTimer() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_seconds > 0) {
-          _seconds--;
-        } else {
-          _generateToken();
-          _seconds = 60;
-        }
-      });
-    });
-  }
-
-  void _generateToken() {
+  void _onItemTapped(int index, TabsRouter tabsRouter) {
     setState(() {
-      _isGeneratingToken = true;
-    });
-
-    Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        _token = (Random().nextInt(900000) + 100000).toString();
-        _isGeneratingToken = false;
-      });
+      _selectedIndex = index;
+      tabsRouter.setActiveIndex(index);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-
-    return Scaffold(
-      appBar: CustomAppBar(),
-      backgroundColor: Color(0xFFDDDDDD),
-      body: Stack(
-        children: [
-          // Imagen de fondo
-          Positioned.fill(
-            child: Image.asset(
-              "assets/edificio.png",
-              fit: BoxFit.cover,
-            ),
-          ),
-
-          SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.1), // Márgenes laterales más grandes
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: screenSize.height * 0.02),
-
-                  // Contenedor de Tiempo Restante
-                  Container(
-                    constraints: BoxConstraints(
-                      maxWidth: 400, // Reduce el ancho máximo para que no se expanda tanto
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      vertical: screenSize.height * 0.015,
-                      horizontal: screenSize.width * 0.05,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 8,
-                          spreadRadius: 2,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Tiempo restante",
-                          style: TextStyle(
-                            fontSize: screenSize.width * 0.045,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(height: screenSize.height * 0.005),
-                        Text(
-                          "00:${_seconds.toString().padLeft(2, '0')}",
-                          style: TextStyle(
-                            fontSize: screenSize.width * 0.1,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                            fontFamily: 'RobotoMono',
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: screenSize.height * 0.03),
-
-                  // Contenedor de Token
-                  Container(
-                    constraints: BoxConstraints(
-                      maxWidth: 400, // Reduce el ancho máximo
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: screenSize.width * 0.05,
-                      vertical: screenSize.height * 0.05,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(40),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          "assets/seguridad.png",
-                          width: screenSize.width * 0.25,
-                          fit: BoxFit.contain,
-                        ),
-                        SizedBox(height: screenSize.height * 0.02),
-                        Text(
-                          "Token generado",
-                          style: TextStyle(
-                            fontSize: screenSize.width * 0.05,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          _token,
-                          style: TextStyle(
-                            fontSize: screenSize.width * 0.1,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF6E0000),
-                            fontFamily: 'Courier',
-                            letterSpacing: 2.0,
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.copy, color: Colors.black),
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                " Copiar",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: screenSize.height * 0.03),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _isGeneratingToken ? null : _generateToken,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF00366C),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                vertical: screenSize.height * 0.02,
-                              ),
-                              elevation: 0,
-                              shadowColor: Colors.blueAccent.withOpacity(0.3),
-                            ),
-                            child: Text(
-                              _isGeneratingToken ? "Generando..." : "Actualizar Token",
-                              style: TextStyle(
-                                fontSize: screenSize.width * 0.05,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: screenSize.height * 0.1),
-                ],
+    return AutoTabsScaffold(
+      routes: const [
+        HomeBody(),
+        Perfil(),
+        Cambio(),
+      ],
+      drawer: CustomDrawer(),
+      appBarBuilder: (context, tabsRouter) => PreferredSize(
+        preferredSize: Size.fromHeight(140),
+        child: ClipPath(
+          clipper: AppBarClipper(), // Solo curvando el AppBar
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.blue.shade900, Colors.blue],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
             ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 40), // Espaciado para evitar la barra de estado
+                Image.asset(
+                  'assets/logo1.png', // Asegúrate de colocar tu logo en assets
+                  height: 100,
+                ),
+              ],
+            ),
           ),
-        ],
+        ),
       ),
-
-      drawer: CustomDrawer(),
+      bottomNavigationBuilder: (context, tabsRouter) {
+        return Container(
+          decoration: BoxDecoration(
+            // Sin curvatura en el BottomNavigationBar
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 10,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: BottomNavigationBar(
+            currentIndex: tabsRouter.activeIndex,
+            onTap: (index) => _onItemTapped(index, tabsRouter),
+            backgroundColor: Colors.white,
+            selectedItemColor: Colors.blueAccent,
+            unselectedItemColor: Colors.grey,
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
+            items: [
+              BottomNavigationBarItem(
+                icon: _buildAnimatedIcon(Icons.home, 0),
+                label: 'Inicio',
+              ),
+              BottomNavigationBarItem(
+                icon: _buildAnimatedIcon(Icons.person, 1),
+                label: 'Perfil',
+              ),
+              BottomNavigationBarItem(
+                icon: _buildAnimatedIcon(Icons.settings, 2),
+                label: 'Configuración',
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
+
+  Widget _buildAnimatedIcon(IconData icon, int index) {
+    bool isSelected = _selectedIndex == index;
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      padding: EdgeInsets.all(isSelected ? 8 : 4),
+      decoration: BoxDecoration(
+        color: isSelected ? Colors.blueAccent.withOpacity(0.2) : Colors.transparent,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        icon,
+        size: isSelected ? 32 : 24,
+        color: isSelected ? Colors.blueAccent : Colors.grey,
+      ),
+    );
+  }
+}
+
+// Clipper para la AppBar curva
+class AppBarClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
+    path.lineTo(0, size.height - 30);
+    path.quadraticBezierTo(size.width / 2, size.height + 30, size.width, size.height - 30);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }

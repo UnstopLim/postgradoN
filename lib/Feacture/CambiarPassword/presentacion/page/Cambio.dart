@@ -22,15 +22,18 @@ class _CambioState extends State<Cambio> {
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: CustomAppBar(),
-      drawer: CustomDrawer(),
-      backgroundColor: Color(0xFFDDDDDD),
+      // appBar: CustomAppBar(),
+      // drawer: CustomDrawer(),
+      backgroundColor: Colors.white,  // Fondo blanco para la pantalla
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              "assets/edificio.png",
-              fit: BoxFit.cover,
+            child: Opacity(
+              opacity: 0.1,  // Hacemos que la imagen sea opaca
+              child: Image.asset(
+                "assets/edificio.png",
+                fit: BoxFit.cover,  // Asegura que la imagen cubra toda la pantalla
+              ),
             ),
           ),
           SingleChildScrollView(
@@ -39,20 +42,12 @@ class _CambioState extends State<Cambio> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: screenSize.height * 0.1),
+                  SizedBox(height: screenSize.height * 0.0),
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 20, horizontal: 25),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.transparent,  // Fondo transparente
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 8,
-                          spreadRadius: 2,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
                     ),
                     child: Column(
                       children: [
@@ -77,7 +72,6 @@ class _CambioState extends State<Cambio> {
                       ],
                     ),
                   ),
-
                   SizedBox(height: screenSize.height * 0.05),
 
                   // Formulario
@@ -136,7 +130,6 @@ class _CambioState extends State<Cambio> {
                       ],
                     ),
                   ),
-
                   SizedBox(height: screenSize.height * 0.1),
                 ],
               ),
@@ -155,7 +148,7 @@ class _CambioState extends State<Cambio> {
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Colors.white.withOpacity(0.2),  // Fondo transparente para los campos de texto
         suffixIcon: IconButton(
           icon: Icon(isObscure ? Icons.visibility_off : Icons.visibility),
           onPressed: toggleVisibility,

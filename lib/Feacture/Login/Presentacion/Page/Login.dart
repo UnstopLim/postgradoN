@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
 
-
 @RoutePage()
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -17,6 +16,18 @@ class _LoginState extends State<Login> {
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
 
+  // FocusNodes para manejar el desplazamiento al enfocar los campos
+  final FocusNode emailFocusNode = FocusNode();
+  final FocusNode passwordFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    // Limpiar los FocusNodes cuando el widget se destruya
+    emailFocusNode.dispose();
+    passwordFocusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -25,10 +36,11 @@ class _LoginState extends State<Login> {
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
 
     return Scaffold(
-      backgroundColor: Colors.grey[350],
+      backgroundColor: Color(0xFFEAEAEA),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, // Permitir que el scroll se active al arrastrar
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: constraints.maxHeight,
@@ -43,11 +55,11 @@ class _LoginState extends State<Login> {
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [Color(0xFF230000), Color(0xFF002A55), Color(0xFF00305E)],
+                          colors: [Color(0xFF230000), Color(0xFF002A55), Color(0xFF004D97)],
                         ),
                         borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(150),
-                          bottomRight: Radius.circular(150),
+                          bottomLeft: Radius.circular(80),
+                          bottomRight: Radius.circular(80),
                         ),
                       ),
                     ),
@@ -69,7 +81,7 @@ class _LoginState extends State<Login> {
 
                     // Contenedor principal
                     Positioned(
-                      top: isLandscape ? screenHeight * 0.25 : screenHeight * 0.38,
+                      top: isLandscape ? screenHeight * 0.15 : screenHeight * 0.33,
                       left: screenWidth * 0.08,
                       right: screenWidth * 0.08,
                       child: Container(
@@ -96,6 +108,7 @@ class _LoginState extends State<Login> {
                             // Campo de email con icono
                             TextField(
                               controller: emailController,
+                              focusNode: emailFocusNode, // Asignar el FocusNode
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                 labelText: "E-Mail",
@@ -114,6 +127,7 @@ class _LoginState extends State<Login> {
                             // Campo de contraseña con icono y botón de visibilidad
                             TextField(
                               controller: passwordController,
+                              focusNode: passwordFocusNode, // Asignar el FocusNode
                               obscureText: !_isPasswordVisible,
                               decoration: InputDecoration(
                                 labelText: "Password",

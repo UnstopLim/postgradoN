@@ -50,19 +50,7 @@ dev_dependencies:
   google_fonts: ^6.1.0
   flutter_riverpod: ^2.0.0
 
-flutter_native_splash:
-  color: "#002C47"  # Fondo del splash
-  image: assets/logo1.png  # Logo de tu app
-  android: true
-  ios: true
-  fullscreen: true
-  android_gravity: center  # Centrar el logo en Android
-  ios_content_mode: center # Centrar el logo en iOS
-  android_12:
-    image: assets/logo1.png
-    icon_background_color: "#002C47"
-    image_dark: assets/logo1.png
-    icon_background_color_dark: "#002C47"
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
