@@ -20,16 +20,15 @@ class _PerfilState extends State<Perfil> {
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.white,  // Fondo blanco para la pantalla
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Fondo del edificio con imagen más opaca
           Positioned.fill(
             child: Opacity(
-              opacity: 0.2,  // Opacidad para la imagen del logo del edificio
+              opacity: 0.2,
               child: Image.asset(
                 "assets/edificio.png",
-                fit: BoxFit.cover,  // Asegura que la imagen cubra toda la pantalla
+                fit: BoxFit.cover,
               ),
             ),
           ),
@@ -40,22 +39,8 @@ class _PerfilState extends State<Perfil> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: screenSize.height * 0.0),
-
-                  // Avatar de perfil
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: Container(
-                      color: Colors.white,  // Fondo opaco para el avatar
-                      child: CircleAvatar(
-                        radius: screenSize.width * 0.15,
-                        backgroundImage: AssetImage('assets/editar-perfil.png'),
-                      ),
-                    ),
-                  ),
-
+                  Image.asset('assets/editar-perfil.png', width: 130),
                   SizedBox(height: screenSize.height * 0.05),
-
-                  // Título de la sección
                   Text(
                     "Perfil de Usuario",
                     style: TextStyle(
@@ -64,10 +49,7 @@ class _PerfilState extends State<Perfil> {
                       color: Colors.black,
                     ),
                   ),
-
                   SizedBox(height: screenSize.height * 0.03),
-
-                  // Información del perfil de forma más profesional
                   _buildInfoItem(Icons.perm_identity, "C.I.", "12345678"),
                   _buildInfoItem(Icons.person, "Nombre", "Juan Carlos"),
                   _buildInfoItem(Icons.person_outline, "Apellidos", "Pérez López"),
@@ -83,8 +65,6 @@ class _PerfilState extends State<Perfil> {
       ),
     );
   }
-
-  // Nueva forma de mostrar los datos de manera más moderna
   Widget _buildInfoItem(IconData icon, String title, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15),
@@ -93,7 +73,7 @@ class _PerfilState extends State<Perfil> {
         children: [
           Icon(
             icon,
-            color: Color(0xFF004388), // Color de icono moderno
+            color: Color(0xFF004388),
             size: 30,
           ),
           SizedBox(width: 20),

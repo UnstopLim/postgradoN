@@ -109,7 +109,7 @@ class _CambioState extends State<Cambio> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF00366C),
+                              backgroundColor: Color(0xFF003F77),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),

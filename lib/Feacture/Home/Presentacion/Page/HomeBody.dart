@@ -75,11 +75,14 @@ class _HomeBodyState extends State<HomeBody> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: screenSize.height * 0.1),
-                  Image.asset("assets/pass1.png", width: screenSize.width * 0.25, fit: BoxFit.contain),
-                  SizedBox(height: 20),
+
+                  SizedBox(height: 5),
                   Text("Tiempo de token", style: TextStyle(fontSize: screenSize.width * 0.05, fontWeight: FontWeight.w500)),
                   Text("00:${_seconds.toString().padLeft(2, '0')}", style: TextStyle(fontSize: screenSize.width * 0.08, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 15),
+                  Image.asset("assets/pass1.png", width: screenSize.width * 0.25, fit: BoxFit.contain),
                   SizedBox(height: 20),
+                  Text(" Token Generado"),
                   Text(
                     _token,
                     style: TextStyle(
@@ -109,7 +112,7 @@ class _HomeBodyState extends State<HomeBody> {
                     child: ElevatedButton(
                       onPressed: _isGeneratingToken ? null : _generateToken,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF55000C),
+                        backgroundColor: Color(0xFF003667),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                         padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.02),
                         elevation: 5,

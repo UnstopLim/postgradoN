@@ -1,11 +1,11 @@
-import 'dart:async';
-import 'dart:math';
+
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/drawer.dart';
 import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart'; // Importa el paquete
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:postgrado/Feacture/Login/Presentacion/Page/AlertDialog.dart'; // Importa el paquete
 
 @RoutePage()
 class Home extends StatefulWidget {
@@ -19,11 +19,18 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index, TabsRouter tabsRouter) {
-    setState(() {
-      _selectedIndex = index;
-      tabsRouter.setActiveIndex(index);
-    });
+    if (index == 3) {
+      //DialogExample();
+
+      context.router.replaceAll([const Login()]);
+    } else {
+      setState(() {
+        _selectedIndex = index;
+        tabsRouter.setActiveIndex(index);
+      });
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +44,7 @@ class _HomeState extends State<Home> {
       appBarBuilder: (context, tabsRouter) => PreferredSize(
         preferredSize: Size.fromHeight(120),
         child: ClipPath(
-          clipper: AppBarClipper(), // Solo curvando el AppBar
+          clipper: AppBarClipper(),
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -64,16 +71,18 @@ class _HomeState extends State<Home> {
           index: tabsRouter.activeIndex,
           height: 60.0,
           items: <Widget>[
-            Icon(Icons.home, size: 30, color: Colors.white),
-            Icon(Icons.person, size: 30, color: Colors.white),
-            Icon(Icons.settings, size: 30, color: Colors.white),
+            Icon(Icons.security_outlined, size: 30, color: Color(0xFF004B91)),
+            Icon(Icons.person, size: 30, color: Color(0xFF004B91)),
+            Icon(Icons.password_outlined, size: 30, color: Color(0xFF004B91)),
+            Icon(Icons.exit_to_app, size: 30, color: Color(0xFF004B91)),
           ],
-          color: Color(0xFF002565), // Color del fondo de la barra
-          buttonBackgroundColor: Color(0xFF55000C), // Color del botón activo
+          color: Color(0xFFE3E3E3), // Color del fondo de la barra
+          buttonBackgroundColor: Color(0xFFDFDFDF), // Color del botón activo
           backgroundColor: Colors.white, // Fondo de la barra
           animationCurve: Curves.easeInOut,
           animationDuration: Duration(milliseconds: 300),
           onTap: (index) => _onItemTapped(index, tabsRouter),
+
         );
       },
     );
@@ -83,7 +92,8 @@ class _HomeState extends State<Home> {
 // Clipper para la AppBar curva
 class AppBarClipper extends CustomClipper<Path> {
   @override
-  Path getClip(Size size) {
+  Path getClip(Size size)
+  {
     Path path = Path();
     path.lineTo(0, size.height - 30);
     path.quadraticBezierTo(size.width / 2, size.height + 30, size.width, size.height - 30);

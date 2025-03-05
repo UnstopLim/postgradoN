@@ -23,7 +23,7 @@ class _RecuperarContrasenaState extends State<Recuperar> {
         children: [
           Positioned.fill(
             child: Opacity(
-              opacity: 0.0,  // Hacemos que la imagen sea opaca
+              opacity: 0.1,  // Hacemos que la imagen sea opaca
               child: Image.asset(
                 "assets/edificio.png",
                 fit: BoxFit.fill,
