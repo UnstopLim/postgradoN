@@ -52,78 +52,81 @@ class _HomeBodyState extends State<HomeBody> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Center(
-            child: Opacity(
-              opacity: 0.2,
-              child: Image.asset(
-                "assets/edificio.png",
-                fit: BoxFit.contain,
-                width: screenSize.width * 0.98,
+    return Scaffold(
+      backgroundColor: Colors.white, // Fondo cambiado a blanco
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Center(
+              child: Opacity(
+                opacity: 0.2,
+                child: Image.asset(
+                  "assets/edificio.png",
+                  fit: BoxFit.contain,
+                  width: screenSize.width * 0.99,
+                ),
               ),
             ),
           ),
-        ),
-        SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.1),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: screenSize.height * 0.1),
-                Image.asset("assets/seguridad.png", width: screenSize.width * 0.2, fit: BoxFit.contain),
-                SizedBox(height: 20),
-                Text(
-                  _token,
-                  style: TextStyle(
-                    fontSize: screenSize.width * 0.12,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF6E0000),
-                    fontFamily: 'Courier',
-                    letterSpacing: 2.0,
+          SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.1),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: screenSize.height * 0.1),
+                  Image.asset("assets/pass1.png", width: screenSize.width * 0.25, fit: BoxFit.contain),
+                  SizedBox(height: 20),
+                  Text("Tiempo de token", style: TextStyle(fontSize: screenSize.width * 0.05, fontWeight: FontWeight.w500)),
+                  Text("00:${_seconds.toString().padLeft(2, '0')}", style: TextStyle(fontSize: screenSize.width * 0.08, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 20),
+                  Text(
+                    _token,
+                    style: TextStyle(
+                      fontSize: screenSize.width * 0.12,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF6E0000),
+                      fontFamily: 'Courier',
+                      letterSpacing: 2.0,
+                    ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    TextButton.icon(
-                      onPressed: () {},
-                      icon: Icon(Icons.copy, color: Colors.black54, size: 20),
-                      label: Text(
-                        "Copiar",
-                        style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TextButton.icon(
+                        onPressed: () {},
+                        icon: Icon(Icons.copy, color: Colors.black54, size: 20,),
+                        label: Text(
+                          "Copiar",
+                          style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 30),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isGeneratingToken ? null : _generateToken,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF55000C),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.02),
+                        elevation: 5,
+                      ),
+                      child: Text(
+                        _isGeneratingToken ? "Generando..." : "Generar token",
+                        style: TextStyle(fontSize: screenSize.width * 0.05, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                     ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Text("Tiempo de token", style: TextStyle(fontSize: screenSize.width * 0.05, fontWeight: FontWeight.w500)),
-                Text("00:${_seconds.toString().padLeft(2, '0')}", style: TextStyle(fontSize: screenSize.width * 0.08, fontWeight: FontWeight.bold)),
-                SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isGeneratingToken ? null : _generateToken,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF00366C),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                      padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.02),
-                      elevation: 5,
-                    ),
-                    child: Text(
-                      _isGeneratingToken ? "Generando..." : "Generar token",
-                      style: TextStyle(fontSize: screenSize.width * 0.05, fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
                   ),
-                ),
-                SizedBox(height: screenSize.height * 0.1),
-              ],
+                  SizedBox(height: screenSize.height * 0.1),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

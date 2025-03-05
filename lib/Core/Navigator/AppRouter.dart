@@ -11,7 +11,6 @@ class AppRouter extends $AppRouter {
     AutoRoute(page: Recuperar.page),
     AutoRoute(page: Login.page),
     AutoRoute(page: Home.page, children: [
-      // Definir las rutas hijas de la página Home
       AutoRoute(page: HomeBody.page, path: 'home'),
       AutoRoute(page: Perfil.page, path: 'perfil'),
       AutoRoute(page: Cambio.page, path: 'configuracion'),
