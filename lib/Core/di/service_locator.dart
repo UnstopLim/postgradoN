@@ -1,0 +1,15 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_it/get_it.dart';
+import 'package:postgrado/Core/network/ApiClient.dart';
+import 'package:postgrado/Feacture/Login/data/repository/auth_repository.dart';
+import 'package:postgrado/Feacture/Login/domain/login_caso_uso/LoginUseCase.dart';
+
+final  getIt = GetIt.instance;
+
+void setupLocator() {
+  getIt.registerLazySingleton<ApiClient>(() => ApiClient());
+  getIt.registerLazySingleton<auth_repository>(() => auth_repository(getIt<ApiClient>()));
+  getIt.registerLazySingleton<LoginUseCase>(() => LoginUseCase(getIt<auth_repository>()));
+  getIt.registerLazySingleton<FlutterSecureStorage>(() => FlutterSecureStorage());
+}
+

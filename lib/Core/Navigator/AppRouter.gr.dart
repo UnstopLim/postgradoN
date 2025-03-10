@@ -45,7 +45,7 @@ abstract class $AppRouter extends _i8.RootStackRouter {
     Login.name: (routeData) {
       return _i8.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i4.Login(),
+        child: _i4.Login(),
       );
     },
     Perfil.name: (routeData) {

@@ -1,28 +1,60 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
+import 'package:postgrado/Feacture/Login/Presentacion/Estado/ApiClientRiberput.dart';
 
 @RoutePage()
-class Login extends StatefulWidget {
-  const Login({super.key});
-
+class Login extends ConsumerStatefulWidget {
   @override
-  State<Login> createState() => _LoginState();
+  _LoginState createState() => _LoginState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginState extends ConsumerState<Login> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  bool rememberMe = false;
   bool _isPasswordVisible = false;
-  bool _rememberMe = false;
 
-  // FocusNodes para manejar el desplazamiento al enfocar los campos
+  // dos
   final FocusNode emailFocusNode = FocusNode();
   final FocusNode passwordFocusNode = FocusNode();
 
+  //uno
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+  Future<void> _loadSavedCredentials() async {
+    final savedUsername = await secureStorage.read(key: 'saved_username');
+    final savedPassword = await secureStorage.read(key: 'saved_password');
+    final savedRememberMe = await secureStorage.read(key: 'remember_me');
+    if (savedRememberMe == 'true') {
+      setState(() {
+        emailController.text = savedUsername ?? '';
+        passwordController.text = savedPassword ?? '';
+        rememberMe = true;
+      });
+    }
+  }
+//uno
+  Future<void> _saveCredentials() async {
+    if (rememberMe) {
+      await secureStorage.write(key: 'saved_username', value: emailController.text);
+      await secureStorage.write(key: 'saved_password', value: passwordController.text);
+      await secureStorage.write(key: 'remember_me', value: 'true');
+    } else {
+      await secureStorage.delete(key: 'saved_username');
+      await secureStorage.delete(key: 'saved_password');
+      await secureStorage.write(key: 'remember_me', value: 'false');
+    }
+  }
+
   @override
   void dispose() {
-    // Limpiar los FocusNodes cuando el widget se destruya
     emailFocusNode.dispose();
     passwordFocusNode.dispose();
     super.dispose();
@@ -30,6 +62,13 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final token = ref.read(authProvider);
+      if (token != null) {
+        context.router.replace(Home());
+      }
+    });
+
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
@@ -48,7 +87,6 @@ class _LoginState extends State<Login> {
               child: IntrinsicHeight(
                 child: Stack(
                   children: [
-                    // Fondo degradado
                     Container(
                       height: isLandscape ? screenHeight * 0.4 : screenHeight * 0.5,
                       decoration: BoxDecoration(
@@ -64,7 +102,6 @@ class _LoginState extends State<Login> {
                       ),
                     ),
 
-                    // Logo centrado
                     Positioned(
                       top: screenHeight * 0.10,
                       left: 0,
@@ -78,8 +115,6 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                     ),
-
-                    // Contenedor principal
                     Positioned(
                       top: isLandscape ? screenHeight * 0.15 : screenHeight * 0.33,
                       left: screenWidth * 0.08,
@@ -127,7 +162,7 @@ class _LoginState extends State<Login> {
                             // Campo de contraseña con icono y botón de visibilidad
                             TextField(
                               controller: passwordController,
-                              focusNode: passwordFocusNode, // Asignar el FocusNode
+                              focusNode: passwordFocusNode,
                               obscureText: !_isPasswordVisible,
                               decoration: InputDecoration(
                                 labelText: "Password",
@@ -159,11 +194,11 @@ class _LoginState extends State<Login> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Checkbox(
-                                  value: _rememberMe,
+                                  value: rememberMe,
                                   activeColor: Color(0xFF00397C),
                                   onChanged: (value) {
                                     setState(() {
-                                      _rememberMe = value!;
+                                      rememberMe = value!;
                                     });
                                   },
                                 ),
@@ -174,13 +209,17 @@ class _LoginState extends State<Login> {
                               ],
                             ),
                             SizedBox(height: screenHeight * 0.02),
-
-                            // Botón de inicio de sesión
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  context.router.push(Home());
+                                onPressed: ()  async
+                                {
+                                  await ref.read(authProvider.notifier).login(emailController.text, passwordController.text);
+                                  if(ref.read(authProvider)!=null)
+                                  {
+                                    await _saveCredentials();
+                                    context.router.push(Home());
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFF00397C),
@@ -195,8 +234,6 @@ class _LoginState extends State<Login> {
                             ),
 
                             SizedBox(height: screenHeight * 0.02),
-
-                            // Botón "Olvidaste tu contraseña?"
                             TextButton(
                               onPressed: () {
                                 context.router.push(Recuperar());

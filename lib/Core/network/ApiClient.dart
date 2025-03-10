@@ -21,6 +21,7 @@ class ApiClient
         }on DioException catch(e)
         {
             print("error en login : ${e.response?.data ?? e.message}");
+            return  null;
         }
     }
 }
