@@ -15,8 +15,11 @@ class _LoginState extends ConsumerState<Login> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+
   bool rememberMe = false;
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
+  String? _errorMessage;
 
   final FocusNode emailFocusNode = FocusNode();
   final FocusNode passwordFocusNode = FocusNode();
@@ -52,6 +55,48 @@ class _LoginState extends ConsumerState<Login> {
     }
   }
 
+  Future<void> _handleLogin() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Por favor ingrese su usuario y contraseña.';
+      });
+      return;
+    }
+
+    try {
+      await ref.read(authProvider.notifier).login(email, password);
+
+      final token = ref.read(authProvider);
+
+      if (token != null && token.isNotEmpty) {
+        await _saveCredentials();
+        if (!mounted) return;
+        context.router.replace(Home());
+      } else {
+        setState(() {
+          _errorMessage = 'Usuario o contraseña incorrectos.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Usuario o contraseña incorrectos.';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   void dispose() {
     emailFocusNode.dispose();
@@ -61,34 +106,25 @@ class _LoginState extends ConsumerState<Login> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final token = ref.read(authProvider);
-      if (token != null && token.isNotEmpty) {
-        context.router.replace(Home());
-      }
-    });
-
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
 
     return Scaffold(
-      backgroundColor: Color(0xFFEAEAEA),
+      backgroundColor: const Color(0xFFEAEAEA),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight,
-              ),
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: IntrinsicHeight(
                 child: Stack(
                   children: [
                     Container(
                       height: isLandscape ? screenHeight * 0.4 : screenHeight * 0.5,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -122,7 +158,9 @@ class _LoginState extends ConsumerState<Login> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(30),
-                          boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 5))],
+                          boxShadow: [
+                            BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 5)),
+                          ],
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -137,34 +175,28 @@ class _LoginState extends ConsumerState<Login> {
                               style: TextStyle(color: Color(0xFF700015), fontWeight: FontWeight.bold, fontSize: screenWidth * 0.04),
                             ),
                             SizedBox(height: screenHeight * 0.03),
+
                             TextField(
                               controller: emailController,
                               focusNode: emailFocusNode,
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
-                                labelText: "E-Mail",
-                                prefixIcon: Icon(Icons.email, color: Colors.black54),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-                                filled: true,
-                                fillColor: Colors.white.withOpacity(0.1),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black, width: 2.0),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                                labelText: 'Correo electrónico',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                               ),
                             ),
                             SizedBox(height: screenHeight * 0.02),
+
                             TextField(
                               controller: passwordController,
                               focusNode: passwordFocusNode,
                               obscureText: !_isPasswordVisible,
                               decoration: InputDecoration(
-                                labelText: "Password",
-                                prefixIcon: Icon(Icons.lock, color: Colors.black54),
+                                labelText: 'Contraseña',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                    color: Colors.black54,
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -172,72 +204,48 @@ class _LoginState extends ConsumerState<Login> {
                                     });
                                   },
                                 ),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-                                filled: true,
-                                fillColor: Colors.white.withOpacity(0.2),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black, width: 2.0),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
                               ),
                             ),
-                            SizedBox(height: screenHeight * 0.02),
+                            SizedBox(height: screenHeight * 0.01),
+
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Checkbox(
                                   value: rememberMe,
-                                  activeColor: Color(0xFF00397C),
-                                  onChanged: (value) {
+                                  onChanged: (bool? value) {
                                     setState(() {
-                                      rememberMe = value!;
+                                      rememberMe = value ?? false;
                                     });
                                   },
                                 ),
-                                Text(
-                                  "Recordar contraseña",
-                                  style: TextStyle(fontSize: screenWidth * 0.04, fontWeight: FontWeight.w500),
-                                ),
+                                const Text("Recordar contraseña"),
                               ],
                             ),
+
+                            if (_errorMessage != null) ...[
+                              SizedBox(height: screenHeight * 0.01),
+                              Text(
+                                _errorMessage!,
+                                style: const TextStyle(color: Colors.red, fontSize: 14),
+                              ),
+                            ],
+
                             SizedBox(height: screenHeight * 0.02),
+
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () async {
-                                  await ref.read(authProvider.notifier).login(emailController.text, passwordController.text);
-                                  final token = ref.read(authProvider);
-                                  if (token != null && token.isNotEmpty) {
-                                    await _saveCredentials();
-                                    context.router.push(Home());
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Credenciales inválidas o error en el login')),
-                                    );
-                                  }
-                                },
+                                onPressed: _isLoading ? null : _handleLogin,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFF00397C),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                  padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
+                                  backgroundColor: const Color(0xFF004D97),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                 ),
-                                child: Text(
-                                  "Log in",
-                                  style: TextStyle(fontSize: screenWidth * 0.05, color: Colors.white),
-                                ),
+                                child: _isLoading
+                                    ? const CircularProgressIndicator(color: Colors.white)
+                                    : const Text('Iniciar sesión', style: TextStyle(fontSize: 16)),
                               ),
                             ),
-                            SizedBox(height: screenHeight * 0.02),
-                            TextButton(
-                              onPressed: () {
-                                context.router.push(Recuperar());
-                              },
-                              child: Text(
-                                "¿Olvidaste tu contraseña?",
-                                style: TextStyle(fontSize: screenWidth * 0.04, color: Color(0xFF000000), fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            SizedBox(height: screenHeight * 0.03),
                           ],
                         ),
                       ),
