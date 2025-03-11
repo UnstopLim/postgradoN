@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:postgrado/Core/Navigator/AppRouter.dart';
-import 'package:postgrado/Feacture/Home/Presentacion/Page/Home.dart';
-import 'package:postgrado/Feacture/REcuperar/presentacion/page/Recuperar.dart';
-
+import 'package:postgrado/Core/di/service_locator.dart';
 
 
 void main() {
-  runApp(MyApp());
+  setupLocator();
+  runApp(
+    ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

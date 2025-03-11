@@ -18,16 +18,15 @@ class _LoginState extends ConsumerState<Login> {
   bool rememberMe = false;
   bool _isPasswordVisible = false;
 
-  // dos
   final FocusNode emailFocusNode = FocusNode();
   final FocusNode passwordFocusNode = FocusNode();
 
-  //uno
   @override
   void initState() {
     super.initState();
     _loadSavedCredentials();
   }
+
   Future<void> _loadSavedCredentials() async {
     final savedUsername = await secureStorage.read(key: 'saved_username');
     final savedPassword = await secureStorage.read(key: 'saved_password');
@@ -40,7 +39,7 @@ class _LoginState extends ConsumerState<Login> {
       });
     }
   }
-//uno
+
   Future<void> _saveCredentials() async {
     if (rememberMe) {
       await secureStorage.write(key: 'saved_username', value: emailController.text);
@@ -64,7 +63,7 @@ class _LoginState extends ConsumerState<Login> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final token = ref.read(authProvider);
-      if (token != null) {
+      if (token != null && token.isNotEmpty) {
         context.router.replace(Home());
       }
     });
@@ -79,7 +78,7 @@ class _LoginState extends ConsumerState<Login> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, // Permitir que el scroll se active al arrastrar
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: constraints.maxHeight,
@@ -101,7 +100,6 @@ class _LoginState extends ConsumerState<Login> {
                         ),
                       ),
                     ),
-
                     Positioned(
                       top: screenHeight * 0.10,
                       left: 0,
@@ -139,11 +137,9 @@ class _LoginState extends ConsumerState<Login> {
                               style: TextStyle(color: Color(0xFF700015), fontWeight: FontWeight.bold, fontSize: screenWidth * 0.04),
                             ),
                             SizedBox(height: screenHeight * 0.03),
-
-                            // Campo de email con icono
                             TextField(
                               controller: emailController,
-                              focusNode: emailFocusNode, // Asignar el FocusNode
+                              focusNode: emailFocusNode,
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                 labelText: "E-Mail",
@@ -158,8 +154,6 @@ class _LoginState extends ConsumerState<Login> {
                               ),
                             ),
                             SizedBox(height: screenHeight * 0.02),
-
-                            // Campo de contraseña con icono y botón de visibilidad
                             TextField(
                               controller: passwordController,
                               focusNode: passwordFocusNode,
@@ -188,8 +182,6 @@ class _LoginState extends ConsumerState<Login> {
                               ),
                             ),
                             SizedBox(height: screenHeight * 0.02),
-
-                            // Checkbox "Recordar contraseña"
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -212,13 +204,16 @@ class _LoginState extends ConsumerState<Login> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: ()  async
-                                {
+                                onPressed: () async {
                                   await ref.read(authProvider.notifier).login(emailController.text, passwordController.text);
-                                  if(ref.read(authProvider)!=null)
-                                  {
+                                  final token = ref.read(authProvider);
+                                  if (token != null && token.isNotEmpty) {
                                     await _saveCredentials();
                                     context.router.push(Home());
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Credenciales inválidas o error en el login')),
+                                    );
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
@@ -232,7 +227,6 @@ class _LoginState extends ConsumerState<Login> {
                                 ),
                               ),
                             ),
-
                             SizedBox(height: screenHeight * 0.02),
                             TextButton(
                               onPressed: () {
@@ -243,7 +237,6 @@ class _LoginState extends ConsumerState<Login> {
                                 style: TextStyle(fontSize: screenWidth * 0.04, color: Color(0xFF000000), fontWeight: FontWeight.bold),
                               ),
                             ),
-
                             SizedBox(height: screenHeight * 0.03),
                           ],
                         ),
