@@ -33,7 +33,7 @@ abstract class $AppRouter extends _i8.RootStackRouter {
     Home.name: (routeData) {
       return _i8.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i2.Home(),
+        child: _i2.Home(),
       );
     },
     HomeBody.name: (routeData) {

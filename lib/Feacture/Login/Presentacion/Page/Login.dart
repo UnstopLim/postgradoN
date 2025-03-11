@@ -19,7 +19,7 @@ class _LoginState extends ConsumerState<Login> {
   bool rememberMe = false;
   bool _isPasswordVisible = false;
   bool _isLoading = false;
-  String? _errorMessage;
+
 
   final FocusNode emailFocusNode = FocusNode();
   final FocusNode passwordFocusNode = FocusNode();
@@ -30,7 +30,9 @@ class _LoginState extends ConsumerState<Login> {
     _loadSavedCredentials();
   }
 
-  Future<void> _loadSavedCredentials() async {
+  Future<void> _loadSavedCredentials()
+  async
+  {
     final savedUsername = await secureStorage.read(key: 'saved_username');
     final savedPassword = await secureStorage.read(key: 'saved_password');
     final savedRememberMe = await secureStorage.read(key: 'remember_me');
@@ -43,7 +45,9 @@ class _LoginState extends ConsumerState<Login> {
     }
   }
 
-  Future<void> _saveCredentials() async {
+  Future<void> _saveCredentials()
+  async
+  {
     if (rememberMe) {
       await secureStorage.write(key: 'saved_username', value: emailController.text);
       await secureStorage.write(key: 'saved_password', value: passwordController.text);
@@ -56,49 +60,62 @@ class _LoginState extends ConsumerState<Login> {
   }
 
   Future<void> _handleLogin() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-
-    if (email.isEmpty || password.isEmpty) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = 'Por favor ingrese su usuario y contraseña.';
+      setState(()
+      {
+        _isLoading = true;
       });
-      return;
-    }
 
-    try {
-      await ref.read(authProvider.notifier).login(email, password);
+      final email = emailController.text.trim();
+      final password = passwordController.text.trim();
 
-      final token = ref.read(authProvider);
+      if (email.isEmpty || password.isEmpty)
+      {
+        setState(()
+        {
+          _isLoading = false;
+          final snakBar = SnackBar(content: const Text("Por favor ingrese su usuario y contraseña."),
+              action: SnackBarAction(label: 'Ok', onPressed: () {}));
+          ScaffoldMessenger.of(context).showSnackBar(snakBar);
+          //_errorMessage = 'Por favor ingrese su usuario y contraseña.';
+        });
+        return;
+      }
 
-      if (token != null && token.isNotEmpty) {
-        await _saveCredentials();
-        if (!mounted) return;
-        context.router.replace(Home());
-      } else {
+      try
+      {
+          await ref.read(authProvider.notifier).login(email, password);
+          final token = ref.read(authProvider);
+          if (token != null && token.isNotEmpty)
+          {
+            await _saveCredentials();
+            if (!mounted) return;
+            context.router.replace(Home());
+          }
+          else
+          {
+            setState(()
+            {
+              final snakBar = SnackBar(content: const Text("Usuarios no encontrado"),
+              action: SnackBarAction(label: 'Ok', onPressed: () {}));
+              ScaffoldMessenger.of(context).showSnackBar(snakBar);
+            });
+          }
+      } catch (e) {
         setState(() {
-          _errorMessage = 'Usuario o contraseña incorrectos.';
+          final snakBar = SnackBar(content: const Text("contraseña incorecta"),
+              action: SnackBarAction(label: 'Ok', onPressed: () {}));
+          ScaffoldMessenger.of(context).showSnackBar(snakBar);
+        });
+      } finally {
+        setState(() {
+          _isLoading = false;
         });
       }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Usuario o contraseña incorrectos.';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
 
   @override
-  void dispose() {
+  void dispose()
+  {
     emailFocusNode.dispose();
     passwordFocusNode.dispose();
     super.dispose();
@@ -222,13 +239,6 @@ class _LoginState extends ConsumerState<Login> {
                               ],
                             ),
 
-                            if (_errorMessage != null) ...[
-                              SizedBox(height: screenHeight * 0.01),
-                              Text(
-                                _errorMessage!,
-                                style: const TextStyle(color: Colors.red, fontSize: 14),
-                              ),
-                            ],
 
                             SizedBox(height: screenHeight * 0.02),
 
@@ -239,11 +249,11 @@ class _LoginState extends ConsumerState<Login> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF004D97),
                                   padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                 ),
                                 child: _isLoading
                                     ? const CircularProgressIndicator(color: Colors.white)
-                                    : const Text('Iniciar sesión', style: TextStyle(fontSize: 16)),
+                                    : const Text('Iniciar sesión', style: TextStyle(fontSize: 18,color: Colors.white)),
                               ),
                             ),
                           ],
