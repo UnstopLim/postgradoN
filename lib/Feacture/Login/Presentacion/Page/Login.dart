@@ -20,7 +20,6 @@ class _LoginState extends ConsumerState<Login> {
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
-
   final FocusNode emailFocusNode = FocusNode();
   final FocusNode passwordFocusNode = FocusNode();
 
@@ -30,9 +29,7 @@ class _LoginState extends ConsumerState<Login> {
     _loadSavedCredentials();
   }
 
-  Future<void> _loadSavedCredentials()
-  async
-  {
+  Future<void> _loadSavedCredentials() async {
     final savedUsername = await secureStorage.read(key: 'saved_username');
     final savedPassword = await secureStorage.read(key: 'saved_password');
     final savedRememberMe = await secureStorage.read(key: 'remember_me');
@@ -45,9 +42,7 @@ class _LoginState extends ConsumerState<Login> {
     }
   }
 
-  Future<void> _saveCredentials()
-  async
-  {
+  Future<void> _saveCredentials() async {
     if (rememberMe) {
       await secureStorage.write(key: 'saved_username', value: emailController.text);
       await secureStorage.write(key: 'saved_password', value: passwordController.text);
@@ -60,62 +55,52 @@ class _LoginState extends ConsumerState<Login> {
   }
 
   Future<void> _handleLogin() async {
-      setState(()
-      {
-        _isLoading = true;
+    setState(() {
+      _isLoading = true;
+    });
+
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        _isLoading = false;
+        final snakBar = SnackBar(content: const Text("Por favor ingrese su usuario y contraseña."),
+            action: SnackBarAction(label: 'Ok', onPressed: () {}));
+        ScaffoldMessenger.of(context).showSnackBar(snakBar);
       });
+      return;
+    }
 
-      final email = emailController.text.trim();
-      final password = passwordController.text.trim();
-
-      if (email.isEmpty || password.isEmpty)
-      {
-        setState(()
-        {
-          _isLoading = false;
-          final snakBar = SnackBar(content: const Text("Por favor ingrese su usuario y contraseña."),
-              action: SnackBarAction(label: 'Ok', onPressed: () {}));
-          ScaffoldMessenger.of(context).showSnackBar(snakBar);
-          //_errorMessage = 'Por favor ingrese su usuario y contraseña.';
-        });
-        return;
-      }
-
-      try
-      {
-          await ref.read(authProvider.notifier).login(email, password);
-          final token = ref.read(authProvider);
-          if (token != null && token.isNotEmpty)
-          {
-            await _saveCredentials();
-            if (!mounted) return;
-            context.router.replace(Home());
-          }
-          else
-          {
-            setState(()
-            {
-              final snakBar = SnackBar(content: const Text("Usuarios no encontrado"),
-              action: SnackBarAction(label: 'Ok', onPressed: () {}));
-              ScaffoldMessenger.of(context).showSnackBar(snakBar);
-            });
-          }
-      } catch (e) {
+    try {
+      await ref.read(authProvider.notifier).login(email, password);
+      final token = ref.read(authProvider);
+      if (token != null && token.isNotEmpty) {
+        await _saveCredentials();
+        if (!mounted) return;
+        context.router.replace(Home());
+      } else {
         setState(() {
-          final snakBar = SnackBar(content: const Text("contraseña incorecta"),
+          final snakBar = SnackBar(content: const Text("Usuario no encontrado"),
               action: SnackBarAction(label: 'Ok', onPressed: () {}));
           ScaffoldMessenger.of(context).showSnackBar(snakBar);
         });
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
       }
+    } catch (e) {
+      setState(() {
+        final snakBar = SnackBar(content: const Text("Contraseña incorrecta"),
+            action: SnackBarAction(label: 'Ok', onPressed: () {}));
+        ScaffoldMessenger.of(context).showSnackBar(snakBar);
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     emailFocusNode.dispose();
     passwordFocusNode.dispose();
     super.dispose();
@@ -199,6 +184,7 @@ class _LoginState extends ConsumerState<Login> {
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                 labelText: 'Correo electrónico',
+                                prefixIcon: Icon(Icons.email),
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                               ),
                             ),
@@ -210,6 +196,7 @@ class _LoginState extends ConsumerState<Login> {
                               obscureText: !_isPasswordVisible,
                               decoration: InputDecoration(
                                 labelText: 'Contraseña',
+                                prefixIcon: Icon(Icons.lock),
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                                 suffixIcon: IconButton(
                                   icon: Icon(
@@ -239,7 +226,6 @@ class _LoginState extends ConsumerState<Login> {
                               ],
                             ),
 
-
                             SizedBox(height: screenHeight * 0.02),
 
                             SizedBox(
@@ -253,8 +239,16 @@ class _LoginState extends ConsumerState<Login> {
                                 ),
                                 child: _isLoading
                                     ? const CircularProgressIndicator(color: Colors.white)
-                                    : const Text('Iniciar sesión', style: TextStyle(fontSize: 18,color: Colors.white)),
+                                    : const Text('Iniciar sesión', style: TextStyle(fontSize: 18, color: Colors.white)),
                               ),
+                            ),
+                            SizedBox(height: screenHeight * 0.02),
+
+                            TextButton(
+                              onPressed: () {
+                                context.router.push(Recuperar());
+                              },
+                              child: const Text("¿Olvidaste tu contraseña?", style: TextStyle(color: Color(0xFF004D97), fontWeight: FontWeight.bold)),
                             ),
                           ],
                         ),
