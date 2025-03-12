@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
 
   final _app_router =AppRouter();
 
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(

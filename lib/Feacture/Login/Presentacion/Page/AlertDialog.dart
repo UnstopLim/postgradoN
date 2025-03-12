@@ -6,7 +6,8 @@ import 'package:auto_route/auto_route.dart';
 import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
 import 'package:postgrado/Feacture/Login/Presentacion/Estado/ApiClientRiberput.dart';
 
-class LogoutDialog extends StatelessWidget {
+class LogoutDialog extends StatelessWidget
+{
   final WidgetRef ref;
 
   LogoutDialog({required this.ref});

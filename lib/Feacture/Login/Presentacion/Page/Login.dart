@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -9,12 +12,14 @@ import 'package:postgrado/Feacture/Login/Presentacion/Estado/ApiClientRiberput.d
 class Login extends ConsumerStatefulWidget {
   @override
   _LoginState createState() => _LoginState();
+
 }
 
 class _LoginState extends ConsumerState<Login> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+
 
   bool rememberMe = false;
   bool _isPasswordVisible = false;
@@ -55,6 +60,25 @@ class _LoginState extends ConsumerState<Login> {
   }
 
   Future<void> _handleLogin() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi ||connectivityResult == ConnectivityResult.none)
+    {
+      print("Conexion exitosa");
+      final snackBar = SnackBar(
+        content: const Text("conexion exitosa"),
+        action: SnackBarAction(label: 'Ok', onPressed: () {}),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      final snackBar = SnackBar(
+        content: const Text("No hay ninguna red disponible"),
+        action: SnackBarAction(label: 'Ok', onPressed: () {}),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });

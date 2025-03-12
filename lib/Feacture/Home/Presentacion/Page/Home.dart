@@ -6,6 +6,7 @@ import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/drawer.dart';
 import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:postgrado/Feacture/Login/Presentacion/Page/AlertDialog.dart';
+import 'package:postgrado/Feacture/Login/Presentacion/Page/AlertDialogConection.dart';
 
 @RoutePage()
 class Home extends ConsumerStatefulWidget {

@@ -42,8 +42,8 @@ dependencies:
   flutter_riverpod: ^2.3.6
   shared_preferences: ^2.2.2
   get_it: ^7.2.0
-
-  # The following adds the Cupertino Icons font to your application.
+  connectivity_plus: ^6.1.3
+  http: ^1.3.0  # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
