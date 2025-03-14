@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
 import 'package:postgrado/Feacture/Login/Presentacion/Estado/ApiClientRiberput.dart';
+import 'package:postgrado/Feacture/Login/Presentacion/Page/AlertDialogConection.dart';
+import 'package:postgrado/Feacture/Login/Presentacion/Page/network_info.dart';
 
 @RoutePage()
 class Login extends ConsumerStatefulWidget {
@@ -60,25 +62,16 @@ class _LoginState extends ConsumerState<Login> {
   }
 
   Future<void> _handleLogin() async {
-    var connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi ||connectivityResult == ConnectivityResult.none)
-    {
-      print("Conexion exitosa");
-      final snackBar = SnackBar(
-        content: const Text("conexion exitosa"),
-        action: SnackBarAction(label: 'Ok', onPressed: () {}),
+    final hayInternet = await NetworkInfo().isConnected();
+    if (!hayInternet) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ErroConection();
+        },
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } else {
-      final snackBar = SnackBar(
-        content: const Text("No hay ninguna red disponible"),
-        action: SnackBarAction(label: 'Ok', onPressed: () {}),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
     }
-
     setState(() {
       _isLoading = true;
     });
