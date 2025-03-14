@@ -12,13 +12,15 @@ class _ErroConectionState extends State<ErroConection> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Center(
-        child: Icon(Icons.signal_wifi_statusbar_connected_no_internet_4,size: 85,color: Colors.grey,),
+        child: Icon(Icons.signal_wifi_statusbar_connected_no_internet_4,size: 90,color: Colors.grey),
       ),
-      content: Text("Lo siento no tiene conexion a internet",style: TextStyle(fontSize: 17),),
+      backgroundColor: Color(0xFFFFFFFF),
+      content: Text("Algo salió mal.  :(  Por favor, revisa tu conexión a Internet e inténtalo de nuevo.",style: TextStyle(fontSize: 17,color: Color(
+          0xFF400000) ),),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context),
-       child: Text("Aseptar",style: TextStyle(fontSize: 17,color: Color(
-           0xFF00244A)),))
+       child: Text("Aseptar",style: TextStyle(fontSize: 19,color: Color(
+           0xFF450000),fontWeight: FontWeight.bold),))
       ],
     );
   }

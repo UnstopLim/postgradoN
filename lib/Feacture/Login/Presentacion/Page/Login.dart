@@ -14,15 +14,11 @@ import 'package:postgrado/Feacture/Login/Presentacion/Page/network_info.dart';
 class Login extends ConsumerStatefulWidget {
   @override
   _LoginState createState() => _LoginState();
-
 }
-
 class _LoginState extends ConsumerState<Login> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final FlutterSecureStorage secureStorage = FlutterSecureStorage();
-
-
   bool rememberMe = false;
   bool _isPasswordVisible = false;
   bool _isLoading = false;
@@ -62,6 +58,7 @@ class _LoginState extends ConsumerState<Login> {
   }
 
   Future<void> _handleLogin() async {
+    //este metodo verfica la oonexion a internet
     final hayInternet = await NetworkInfo().isConnected();
     if (!hayInternet) {
       showDialog(
@@ -72,6 +69,17 @@ class _LoginState extends ConsumerState<Login> {
       );
       return;
     }
+
+    await ref.read(authProvider.notifier).logout();
+    // final authNotifier = ref.read(authProvider.notifier);
+    // final token = await authNotifier.secureStorage.read(key: 'auth_token');
+    // if (token != null) {
+    //   await authNotifier.logout();
+    //   print('Token eliminado correctamente.');
+    // } else {
+    //   print('No se encontró ningún token. No se hace nada.');
+    // }
+
     setState(() {
       _isLoading = true;
     });
@@ -82,8 +90,16 @@ class _LoginState extends ConsumerState<Login> {
     if (email.isEmpty || password.isEmpty) {
       setState(() {
         _isLoading = false;
-        final snakBar = SnackBar(content: const Text("Por favor ingrese su usuario y contraseña."),
-            action: SnackBarAction(label: 'Ok', onPressed: () {}));
+        final snakBar = SnackBar(content: const Text("Por favor ingrese su usuario y contraseña.",style: TextStyle(color: Colors.black),),
+            backgroundColor: Color(0xFFC3C3C3)
+            ,shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+        ),
+        margin: const EdgeInsets.all(16),
+        behavior: SnackBarBehavior.floating,
+        elevation: 10,
+        duration: const Duration(seconds: 3),
+        action: SnackBarAction(label: 'Ok', onPressed: () {}));
         ScaffoldMessenger.of(context).showSnackBar(snakBar);
       });
       return;
