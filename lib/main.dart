@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:postgrado/Core/Navigator/AppRouter.dart';
 import 'package:postgrado/Core/di/service_locator.dart';
 
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final storage = FlutterSecureStorage();
+  await storage.delete(key: 'auth_token');
+  await storage.delete(key: 'auth_token_expiration');
+
+
   setupLocator();
   runApp(
     ProviderScope(

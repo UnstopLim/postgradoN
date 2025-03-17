@@ -58,7 +58,7 @@ class _LoginState extends ConsumerState<Login> {
   }
 
   Future<void> _handleLogin() async {
-    //este metodo verfica la oonexion a internet
+
     final hayInternet = await NetworkInfo().isConnected();
     if (!hayInternet) {
       showDialog(
@@ -70,15 +70,15 @@ class _LoginState extends ConsumerState<Login> {
       return;
     }
 
-    await ref.read(authProvider.notifier).logout();
-    // final authNotifier = ref.read(authProvider.notifier);
-    // final token = await authNotifier.secureStorage.read(key: 'auth_token');
-    // if (token != null) {
-    //   await authNotifier.logout();
-    //   print('Token eliminado correctamente.');
-    // } else {
-    //   print('No se encontró ningún token. No se hace nada.');
-    // }
+//     await ref.read(authProvider.notifier).logout();
+//
+// // Verifica si realmente se eliminó
+//     final token = await ref.read(authProvider.notifier).secureStorage.read(key: 'auth_token');
+//     if (token == null) {
+//       print("Token eliminado correctamente.");
+//     } else {
+//       print("Error: El token sigue existiendo.");
+//     }
 
     setState(() {
       _isLoading = true;
