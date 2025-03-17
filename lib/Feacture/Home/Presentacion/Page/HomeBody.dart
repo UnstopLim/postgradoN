@@ -53,7 +53,7 @@ class _HomeBodyState extends State<HomeBody> {
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo cambiado a blanco
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           Positioned.fill(

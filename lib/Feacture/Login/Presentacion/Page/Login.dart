@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -11,7 +10,8 @@ import 'package:postgrado/Feacture/Login/Presentacion/Page/AlertDialogConection.
 import 'package:postgrado/Feacture/Login/Presentacion/Page/network_info.dart';
 
 @RoutePage()
-class Login extends ConsumerStatefulWidget {
+class Login extends ConsumerStatefulWidget
+{
   @override
   _LoginState createState() => _LoginState();
 }
@@ -45,7 +45,8 @@ class _LoginState extends ConsumerState<Login> {
     }
   }
 
-  Future<void> _saveCredentials() async {
+  Future<void> _saveCredentials() async
+  {
     if (rememberMe) {
       await secureStorage.write(key: 'saved_username', value: emailController.text);
       await secureStorage.write(key: 'saved_password', value: passwordController.text);
@@ -69,16 +70,6 @@ class _LoginState extends ConsumerState<Login> {
       );
       return;
     }
-
-//     await ref.read(authProvider.notifier).logout();
-//
-// // Verifica si realmente se eliminó
-//     final token = await ref.read(authProvider.notifier).secureStorage.read(key: 'auth_token');
-//     if (token == null) {
-//       print("Token eliminado correctamente.");
-//     } else {
-//       print("Error: El token sigue existiendo.");
-//     }
 
     setState(() {
       _isLoading = true;
@@ -112,7 +103,9 @@ class _LoginState extends ConsumerState<Login> {
         await _saveCredentials();
         if (!mounted) return;
         context.router.replace(Home());
-      } else {
+      }
+      else
+      {
         setState(() {
           final snakBar = SnackBar(content: const Text("Usuario no encontrado"),
               action: SnackBarAction(label: 'Ok', onPressed: () {}));
@@ -130,6 +123,20 @@ class _LoginState extends ConsumerState<Login> {
         _isLoading = false;
       });
     }
+  }
+
+  void _verf() async
+  {
+    final hayInternet = await NetworkInfo().isConnected();
+    if(!hayInternet)
+    {
+        showDialog(context: context,builder: (BuildContext context)
+        {
+          return ErroConection();
+        }) ;
+        return;
+    }
+    context.router.push(Recuperar());
   }
 
   @override
@@ -279,7 +286,7 @@ class _LoginState extends ConsumerState<Login> {
 
                             TextButton(
                               onPressed: () {
-                                context.router.push(Recuperar());
+                                  _verf();
                               },
                               child: const Text("¿Olvidaste tu contraseña?", style: TextStyle(color: Color(0xFF004D97), fontWeight: FontWeight.bold)),
                             ),

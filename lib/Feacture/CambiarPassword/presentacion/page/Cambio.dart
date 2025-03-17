@@ -1,7 +1,6 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
-import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/CustomAppBar.dart';
-import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/drawer.dart';
+
 
 @RoutePage()
 class Cambio extends StatefulWidget {
@@ -24,15 +23,15 @@ class _CambioState extends State<Cambio> {
     return Scaffold(
       // appBar: CustomAppBar(),
       // drawer: CustomDrawer(),
-      backgroundColor: Colors.white,  // Fondo blanco para la pantalla
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           Positioned.fill(
             child: Opacity(
-              opacity: 0.1,  // Hacemos que la imagen sea opaca
+              opacity: 0.2,
               child: Image.asset(
                 "assets/edificio.png",
-                fit: BoxFit.cover,  // Asegura que la imagen cubra toda la pantalla
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -46,7 +45,7 @@ class _CambioState extends State<Cambio> {
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 20, horizontal: 25),
                     decoration: BoxDecoration(
-                      color: Colors.transparent,  // Fondo transparente
+                      color: Colors.transparent,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(

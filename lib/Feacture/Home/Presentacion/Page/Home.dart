@@ -7,6 +7,7 @@ import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:postgrado/Feacture/Login/Presentacion/Page/AlertDialog.dart';
 import 'package:postgrado/Feacture/Login/Presentacion/Page/AlertDialogConection.dart';
+import 'package:postgrado/Feacture/Login/Presentacion/Page/network_info.dart';
 
 @RoutePage()
 class Home extends ConsumerStatefulWidget {
@@ -19,12 +20,22 @@ class Home extends ConsumerStatefulWidget {
 class _HomeState extends ConsumerState<Home> {
   int _selectedIndex = 0;
 
-  void _onItemTapped(int index, TabsRouter tabsRouter) {
+  void _onItemTapped(int index, TabsRouter tabsRouter) async {
     if (index == 3)
     {
       showDialog(context: context, builder: (context) => LogoutDialog(ref: ref));
-      //context.router.replaceAll([const Login()]);
-    } else {
+    }
+    else
+    {
+      final hayInternet = await NetworkInfo().isConnected();
+      if(!hayInternet)
+      {
+         showDialog(context: context,builder: (BuildContext context)
+         {
+           return ErroConection();
+         }) ;
+         return;
+      }
       setState(() {
         _selectedIndex = index;
         tabsRouter.setActiveIndex(index);
@@ -83,11 +94,11 @@ class _HomeState extends ConsumerState<Home> {
                         color: Colors.black.withOpacity(0.2),
                         blurRadius: 20,
                         spreadRadius: 5,
-                        offset: Offset(0, 10), // Posición de la sombra hacia abajo
+                        offset: Offset(0, 10),
                       ),
                     ],
                     borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(50), // 🔹 Sombra curvada
+                      top: Radius.circular(50),
                     ),
                   ),
                 ),

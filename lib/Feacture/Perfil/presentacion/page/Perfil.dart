@@ -28,7 +28,7 @@ class _PerfilState extends State<Perfil> {
               opacity: 0.2,
               child: Image.asset(
                 "assets/edificio.png",
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
               ),
             ),
           ),
