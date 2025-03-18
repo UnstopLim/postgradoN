@@ -1,11 +1,14 @@
 
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiClient
 {
     final Dio dio;
-    ApiClient({Dio? dio})
-        :dio = dio ?? Dio(BaseOptions(baseUrl: "https://api-preinscripcion.posgradoupea.edu.bo/api/v1"));
+    final FlutterSecureStorage secureStorage;
+    ApiClient({Dio? dio,FlutterSecureStorage? secureStorage})
+        :dio = dio ?? Dio(BaseOptions(baseUrl: "https://api-preinscripcion.posgradoupea.edu.bo/api/v1")),
+    secureStorage = secureStorage ?? const FlutterSecureStorage();
 
     Future<Map<String,dynamic>?> login(String username,String password)
     async
@@ -23,5 +26,27 @@ class ApiClient
             print("error en login : ${e.response?.data ?? e.message}");
             return  null;
         }
+    }
+
+    Future<Map<String,dynamic>?> getUserProfile() async
+    {
+        try
+        {
+           final token = await secureStorage.read(key: 'auth_token');
+           if(token==null)
+               {
+                   print("El toke es null ");
+                   return null;
+               }
+
+           final responce = await dio.get("/usuario/my-data",options: Options(headers: {"Authorization" : "Bearer $token"}));
+            print("respueta del perfil del get ${responce.data}");
+           return responce.data;
+        } on DioException catch(e)
+        {
+            print("Error al obtener el perfil: ${e.response?.data ??e.message } " );
+            return null;
+        }
+
     }
 }

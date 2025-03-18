@@ -35,7 +35,7 @@ class AuthNotifier extends StateNotifier<String?>
             print('Login exitoso. Token guardado.');
             return true;
           } else {
-            print('Credenciales inválidas o respuesta incorrecta.');
+            print('Credenciales inválidas o respuesta incorrectas.');
             return false;
           }
       } catch (e) {
