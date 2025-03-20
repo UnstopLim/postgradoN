@@ -46,6 +46,7 @@ class _HomeState extends ConsumerState<Home> {
   @override
   Widget build(BuildContext context) {
     return AutoTabsScaffold(
+      backgroundColor: Colors.white,
       routes: const [
         HomeBody(),
         Perfil(),
