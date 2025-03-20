@@ -15,10 +15,17 @@ class LogoutDialog extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Center(
-        child : Icon(Icons.crisis_alert,size: 85,color: Color(0xFF7C7C7C),)
-        //Text("Cerrar sesión",style: TextStyle(color: Color(0xFF430000),fontWeight: FontWeight.bold,fontSize: 30),),
+      title: Column(
+        children: [
+          Icon(Icons.exit_to_app_outlined,color: Color(0xff55595e),size: 85,),
+          SizedBox(height: 20),
+          Text("Serrar seccion",style: TextStyle(fontSize: 29,fontWeight: FontWeight.w500),)
+        ],
       ),
+      // title: Center(
+      //   child : Icon(Icons.exit_to_app_outlined,size: 85,color: Color(0xFF7C7C7C),)
+      //   //Text("Cerrar sesión",style: TextStyle(color: Color(0xFF430000),fontWeight: FontWeight.bold,fontSize: 30),),
+      // ),
       content:  Text("¿Estás seguro de que quieres cerrar sesión?",style: TextStyle(fontSize: 17),),
       actions: [
         TextButton(

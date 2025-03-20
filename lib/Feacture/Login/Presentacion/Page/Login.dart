@@ -170,11 +170,12 @@ class _LoginState extends ConsumerState<Login> {
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [Color(0xFF230000), Color(0xFF002A55), Color(0xFF004D97)],
+                          colors: [Color(0xFF0074E8), Color(0xFF003468), Color(
+                              0xFF001B42)],
                         ),
                         borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(80),
-                          bottomRight: Radius.circular(80),
+                          bottomLeft: Radius.circular(150),
+                          bottomRight: Radius.circular(150),
                         ),
                       ),
                     ),
@@ -185,7 +186,7 @@ class _LoginState extends ConsumerState<Login> {
                       child: Center(
                         child: Image.asset(
                           "assets/logo2.png",
-                          width: screenWidth * 0.35,
+                          width: screenWidth * 0.65,
                           height: screenWidth * 0.35,
                           fit: BoxFit.contain,
                         ),

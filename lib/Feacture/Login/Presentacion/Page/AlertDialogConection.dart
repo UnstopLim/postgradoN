@@ -18,7 +18,7 @@ class _ErroConectionState extends State<ErroConection> {
           Icon(
             Icons.wifi_off_rounded,
             size: 90,
-            color: Colors.redAccent,
+            color: Color(0xFF650006),
           ),
           const SizedBox(height: 10),
           Text(
@@ -40,7 +40,7 @@ class _ErroConectionState extends State<ErroConection> {
       actions: [
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.redAccent,
+            backgroundColor: Color(0xFF003971),
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
