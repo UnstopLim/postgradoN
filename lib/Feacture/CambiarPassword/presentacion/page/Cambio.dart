@@ -139,7 +139,6 @@ class _CambioState extends State<Cambio> {
     );
   }
 
-  // Widget para los campos de contraseña
   Widget _buildPasswordField(String label, bool isObscure, VoidCallback toggleVisibility) {
     return TextFormField(
       obscureText: isObscure,

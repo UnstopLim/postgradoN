@@ -153,25 +153,28 @@ class _LoginState extends ConsumerState<Login> {
     final screenHeight = mediaQuery.size.height;
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
 
+
     return Scaffold(
       backgroundColor: const Color(0xFFEAEAEA),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
             child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              constraints: BoxConstraints(minHeight: screenHeight),
               child: IntrinsicHeight(
                 child: Stack(
                   children: [
+                    // Fondo degradado
                     Container(
                       height: isLandscape ? screenHeight * 0.4 : screenHeight * 0.5,
                       decoration: const BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [Color(0xFF0074E8), Color(0xFF003468), Color(
-                              0xFF001B42)],
+                          colors: [Color(0xFF0074E8), Color(0xFF003468), Color(0xFF001B42)],
                         ),
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(150),
@@ -179,8 +182,10 @@ class _LoginState extends ConsumerState<Login> {
                         ),
                       ),
                     ),
+
+                    // 🔹 Logo agregado aquí 🔹
                     Positioned(
-                      top: screenHeight * 0.10,
+                      top: screenHeight * 0.10, // Ajusta la posición vertical
                       left: 0,
                       right: 0,
                       child: Center(
@@ -192,6 +197,8 @@ class _LoginState extends ConsumerState<Login> {
                         ),
                       ),
                     ),
+
+                    // Contenedor con el formulario
                     Positioned(
                       top: isLandscape ? screenHeight * 0.15 : screenHeight * 0.33,
                       left: screenWidth * 0.08,
@@ -252,7 +259,6 @@ class _LoginState extends ConsumerState<Login> {
                               ),
                             ),
                             SizedBox(height: screenHeight * 0.01),
-
                             Row(
                               children: [
                                 Checkbox(
@@ -287,7 +293,7 @@ class _LoginState extends ConsumerState<Login> {
 
                             TextButton(
                               onPressed: () {
-                                  _verf();
+                                _verf();
                               },
                               child: const Text("¿Olvidaste tu contraseña?", style: TextStyle(color: Color(0xFF004D97), fontWeight: FontWeight.bold)),
                             ),
@@ -299,9 +305,15 @@ class _LoginState extends ConsumerState<Login> {
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
+
+
+
+
+
+
   }
 }

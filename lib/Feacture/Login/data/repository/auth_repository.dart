@@ -11,7 +11,4 @@ class auth_repository{
    {
        return await apiClient.login(username, password);
    }
-
-
-
 }
