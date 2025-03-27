@@ -183,7 +183,6 @@ class _LoginState extends ConsumerState<Login> {
                       ),
                     ),
 
-                    // 🔹 Logo agregado aquí 🔹
                     Positioned(
                       top: screenHeight * 0.10, // Ajusta la posición vertical
                       left: 0,

@@ -22,10 +22,6 @@ class LogoutDialog extends StatelessWidget
           Text("Serrar seccion",style: TextStyle(fontSize: 29,fontWeight: FontWeight.w500),)
         ],
       ),
-      // title: Center(
-      //   child : Icon(Icons.exit_to_app_outlined,size: 85,color: Color(0xFF7C7C7C),)
-      //   //Text("Cerrar sesión",style: TextStyle(color: Color(0xFF430000),fontWeight: FontWeight.bold,fontSize: 30),),
-      // ),
       content:  Text("¿Estás seguro de que quieres cerrar sesión?",style: TextStyle(fontSize: 17),),
       actions: [
         TextButton(
