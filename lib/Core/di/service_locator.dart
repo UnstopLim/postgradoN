@@ -25,8 +25,5 @@ void setupLocator() {
   getIt.registerLazySingleton<tokenRepository>(() => tokenRepository(getIt<ApiClient>()));
   getIt.registerLazySingleton<GetTokenCaseUse>(() => GetTokenCaseUse(getIt<tokenRepository>()));
 
-
-
-
 }
 

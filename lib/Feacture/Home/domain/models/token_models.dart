@@ -1,29 +1,20 @@
-
 import 'package:json_annotation/json_annotation.dart';
 
 part 'token_models.g.dart';
 
 @JsonSerializable()
-class TokenModels
-{
-   @JsonKey(name: "status")
-   final String status;
-   @JsonKey(name: 'data')
-   final Data data;
-   TokenModels({required this.status,required this.data});
-   factory TokenModels.fromJson(Map<String,dynamic> json) =>
-       _$TokenModelsFromJson(json);
-   Map<String,dynamic> toJson() => _$TokenModelsToJson(this);
-}
+class Data {
+  final String? token;
+  final String? ttlToken;
 
-@JsonSerializable()
-class Data
-{
-    final String token;
-    final String ttlToken;
-    Data({required this.token,required this.ttlToken});
-    factory Data.fromJson(Map<String,dynamic> json) =>
-        _$DataFromJson(json);
+  Data({required this.token, required this.ttlToken});
 
-    Map<String,dynamic> toJson() => _$DataToJson(this);
+  factory Data.fromJson(Map<String, dynamic> json) {
+    return Data(
+      token: json['token']?.toString(),  // Convierte cualquier valor a String
+      ttlToken: json['ttlToken'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() => _$DataToJson(this);
 }

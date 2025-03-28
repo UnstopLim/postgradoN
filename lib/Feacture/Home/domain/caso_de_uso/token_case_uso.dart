@@ -7,7 +7,7 @@ class GetTokenCaseUse
   final tokenRepository TokenRepository;
   GetTokenCaseUse(this.TokenRepository);
 
-  Future<TokenModels?> execute()
+  Future<Data?> execute()
   async
   {
     return await TokenRepository.getTokenUser();
