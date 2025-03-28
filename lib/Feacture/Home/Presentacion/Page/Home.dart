@@ -52,7 +52,6 @@ class _HomeState extends ConsumerState<Home> {
         Perfil(),
         Cambio(),
       ],
-      drawer: CustomDrawer(),
       appBarBuilder: (context, tabsRouter) => PreferredSize(
         preferredSize: Size.fromHeight(120),
         child: ClipPath(

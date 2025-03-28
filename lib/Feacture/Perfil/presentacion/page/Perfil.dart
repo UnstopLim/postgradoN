@@ -34,12 +34,12 @@ class Perfil extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(height: screenSize.height * 0.02),
-                      Image.asset('assets/editar-perfil.png', width: 120),
-                      SizedBox(height: screenSize.height * 0.05),
-                      Text(
-                        "Datos Personales",
-                        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.black),
-                      ),
+                      Image.asset('assets/nueva-cuenta.png', width: 100),
+                      // SizedBox(height: screenSize.height * 0.05),
+                      // Text(
+                      //   "Datos Personales",
+                      //   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.black),
+                      // ),
                       SizedBox(height: screenSize.height * 0.03),
                       _buildInfoItem(Icons.perm_identity, "Nombre Usuario", perfil.nombre_usuario),
                       _buildInfoItem(Icons.person, "Nombre", perfil.persona.nombre),
@@ -74,7 +74,7 @@ class Perfil extends ConsumerWidget {
               children: [
                 Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black54)),
                 SizedBox(height: 5),
-                Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black)),
+                Text(value, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.black)),
               ],
             ),
           ),
