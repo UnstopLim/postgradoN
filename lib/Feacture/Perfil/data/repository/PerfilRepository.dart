@@ -17,7 +17,6 @@ class PerfilRepository
       return UserProfileModel.fromJson(responce["data"]);
     }
     return null;
-
   }
 
 

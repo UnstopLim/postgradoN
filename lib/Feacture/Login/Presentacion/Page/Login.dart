@@ -184,7 +184,7 @@ class _LoginState extends ConsumerState<Login> {
                     ),
 
                     Positioned(
-                      top: screenHeight * 0.10, // Ajusta la posición vertical
+                      top: screenHeight * 0.10,
                       left: 0,
                       right: 0,
                       child: Center(
@@ -197,7 +197,6 @@ class _LoginState extends ConsumerState<Login> {
                       ),
                     ),
 
-                    // Contenedor con el formulario
                     Positioned(
                       top: isLandscape ? screenHeight * 0.15 : screenHeight * 0.33,
                       left: screenWidth * 0.08,

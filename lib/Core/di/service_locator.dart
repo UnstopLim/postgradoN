@@ -1,6 +1,8 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:postgrado/Core/network/ApiClient.dart';
+import 'package:postgrado/Feacture/CambiarPassword/data/repository/CambioRepository.dart';
+import 'package:postgrado/Feacture/CambiarPassword/domain/cambioUseCAse/CambioUseCase.dart';
 import 'package:postgrado/Feacture/Home/data/repository/tokenRepository.dart';
 import 'package:postgrado/Feacture/Home/domain/caso_de_uso/token_case_uso.dart';
 import 'package:postgrado/Feacture/Login/data/repository/auth_repository.dart';
@@ -24,6 +26,10 @@ void setupLocator() {
   //token
   getIt.registerLazySingleton<tokenRepository>(() => tokenRepository(getIt<ApiClient>()));
   getIt.registerLazySingleton<GetTokenCaseUse>(() => GetTokenCaseUse(getIt<tokenRepository>()));
+  //cambioPassword
+  getIt.registerLazySingleton<CambioRepository>(() => CambioRepository(getIt<ApiClient>()));
+  getIt.registerLazySingleton<CambioUseCase>(() => CambioUseCase(getIt<CambioRepository>()));
+
 
 }
 

@@ -38,7 +38,7 @@ class ApiClient
                    print("El toke es null ");
                    return null;
                }
-           final responce = await dio.get("/usuario/my-data",options: Options(headers: {"Authorization" : "Bearer $token"}));
+           final responce = await dio.get("/usuario/my-data",options: Options(headers: {"Authorization" : "Bearer $token"}) );
             print("respueta del perfil del get ${responce.data}");
            return responce.data;
         } on DioException catch(e)
@@ -68,6 +68,36 @@ class ApiClient
         return null;
       }
     }
+    //enpoint Update
+    Future<Map<String,dynamic>?> UpdatePassword(String password,String NewPassword,String NewPassword2)
+    async
+    {
+        try
+        {
+            final token =await secureStorage.read(key: 'auth_token');
+            if(token==null)
+            {
+               print("El token es null");
+               return null;
+            }
+            final responce= await dio.put("/usuario/update-password",options: Options(headers: {"Authorization": "Bearer $token"}),data:
+            {
+              "password" : password,
+              "newPassword" : NewPassword,
+              "confirmPassword" : NewPassword2
+            });
+            print("Password password");
+            return responce.data;
+        } on DioException catch(e)
+        {
+           print("Error del password ${e.response?.data  ?? e.message} ");
+           return null;
+        }
+    }
+
+
+
+
 
 
 }

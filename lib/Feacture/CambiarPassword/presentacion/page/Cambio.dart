@@ -1,28 +1,70 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:postgrado/Feacture/CambiarPassword/presentacion/estado/CambioRiberput.dart';
+import 'package:postgrado/Feacture/Login/Presentacion/Page/AlertDialogConection.dart';
+import 'package:postgrado/Feacture/Login/Presentacion/Page/network_info.dart';
 
 
 @RoutePage()
-class Cambio extends StatefulWidget {
+class Cambio extends ConsumerStatefulWidget {
   const Cambio({super.key});
 
   @override
-  State<Cambio> createState() => _CambioState();
+  _CambioState createState() => _CambioState();
 }
 
-class _CambioState extends State<Cambio> {
+class _CambioState extends ConsumerState<Cambio> {
+   final TextEditingController passwordController = TextEditingController();
+   final TextEditingController newPasswordController = TextEditingController();
+   final TextEditingController confirmPasswordController = TextEditingController();
+   bool _isLoading = false;
+
+
   final _formKey = GlobalKey<FormState>();
   bool _isObscureOld = true;
   bool _isObscureNew = true;
   bool _isObscureConfirm = true;
+
+
+  Future<void> _cambioPassword()
+   async
+   {
+      final hayInternet = await NetworkInfo().isConnected();
+      if(!hayInternet)
+      {
+         showDialog(context: context, builder: (BuildContext context) {
+           return ErroConection();
+         });
+         return;
+      }
+      final password = passwordController.text.trim();
+      final newPassword = newPasswordController.text.trim();
+      final confirmPassword= confirmPasswordController.text.trim();
+      try
+      {
+        await ref.read(cambioProvider.notifier).CambioPassword(password, newPassword, confirmPassword);
+        setState(() {
+          final snakBar = SnackBar(content: const Text("Se cambio la contraseña correctamente"),
+              action: SnackBarAction(label: 'Ok', onPressed: () {}));
+          ScaffoldMessenger.of(context).showSnackBar(snakBar);
+        });
+      }catch(e){
+        setState(() {
+          final snakBar = SnackBar(content: const Text("No se modifico la contraseña"),
+              action: SnackBarAction(label: 'Ok', onPressed: () {}));
+          ScaffoldMessenger.of(context).showSnackBar(snakBar);
+        });
+      }
+   }
+
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      // appBar: CustomAppBar(),
-      // drawer: CustomDrawer(),
+
       backgroundColor: Colors.white,
       body: Stack(
         children: [
@@ -73,24 +115,23 @@ class _CambioState extends State<Cambio> {
                   ),
                   SizedBox(height: screenSize.height * 0.05),
 
-                  // Formulario
                   Form(
                     key: _formKey,
                     child: Column(
                       children: [
-                        _buildPasswordField("Contraseña Actual", _isObscureOld, () {
+                        _buildPasswordField("Contraseña Actual",passwordController, _isObscureOld, () {
                           setState(() {
                             _isObscureOld = !_isObscureOld;
                           });
                         }),
                         SizedBox(height: 15),
-                        _buildPasswordField("Nueva Contraseña", _isObscureNew, () {
+                        _buildPasswordField("Nueva Contraseña",newPasswordController, _isObscureNew, () {
                           setState(() {
                             _isObscureNew = !_isObscureNew;
                           });
                         }),
                         SizedBox(height: 15),
-                        _buildPasswordField("Confirmar Nueva Contraseña", _isObscureConfirm, () {
+                        _buildPasswordField("Confirmar Nueva Contraseña",confirmPasswordController, _isObscureConfirm, () {
                           setState(() {
                             _isObscureConfirm = !_isObscureConfirm;
                           });
@@ -102,6 +143,7 @@ class _CambioState extends State<Cambio> {
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 // Acción para cambiar la contraseña
+                                _isLoading ?  null: _cambioPassword();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text("Contraseña cambiada exitosamente")),
                                 );
@@ -116,14 +158,18 @@ class _CambioState extends State<Cambio> {
                               elevation: 4,
                               shadowColor: Colors.blueAccent.withOpacity(0.3),
                             ),
-                            child: Text(
-                              "Cambiar Contraseña",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
+                            child:  _isLoading
+                               ? const CircularProgressIndicator(color: Colors.white,)
+                                :const Text("Cambiar contraseña",style: TextStyle(fontSize: 18,color: Colors.white),)
+                            ,
+                            // child: Text(
+                            //   "Cambiar Contraseña",
+                            //   style: TextStyle(
+                            //     fontSize: 18,
+                            //     fontWeight: FontWeight.bold,
+                            //     color: Colors.white,
+                            //   ),
+                            // ),
                           ),
                         ),
                       ],
@@ -139,14 +185,15 @@ class _CambioState extends State<Cambio> {
     );
   }
 
-  Widget _buildPasswordField(String label, bool isObscure, VoidCallback toggleVisibility) {
+  Widget _buildPasswordField(String label,TextEditingController controllerEdit, bool isObscure, VoidCallback toggleVisibility) {
     return TextFormField(
+      controller: controllerEdit,
       obscureText: isObscure,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.2),  // Fondo transparente para los campos de texto
+        fillColor: Colors.white.withOpacity(0.2),
         suffixIcon: IconButton(
           icon: Icon(isObscure ? Icons.visibility_off : Icons.visibility),
           onPressed: toggleVisibility,
