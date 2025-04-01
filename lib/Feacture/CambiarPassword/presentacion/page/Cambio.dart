@@ -72,10 +72,6 @@ class _CambioPasswordScreenState extends ConsumerState<Cambio> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Cambio de Contraseña'),
-        centerTitle: true,
-      ),
       body: Stack(
         children: [
           Positioned.fill(
