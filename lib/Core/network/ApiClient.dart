@@ -10,6 +10,7 @@ class ApiClient
     ApiClient({Dio? dio,FlutterSecureStorage? secureStorage})
         :dio = dio ?? Dio(BaseOptions(baseUrl: "https://api-preinscripcion.posgradoupea.edu.bo/api/v1")),
     secureStorage = secureStorage ?? const FlutterSecureStorage();
+
     //Enpoint de login
     Future<Map<String,dynamic>?> login(String username,String password)
     async
@@ -69,35 +70,37 @@ class ApiClient
       }
     }
     //enpoint Update
-    Future<Map<String,dynamic>?> UpdatePassword(String password,String NewPassword,String NewPassword2)
-    async
-    {
-        try
-        {
-            final token =await secureStorage.read(key: 'auth_token');
-            if(token==null)
-            {
-               print("El token es null");
-               return null;
-            }
-            final responce= await dio.put("/usuario/update-password",options: Options(headers: {"Authorization": "Bearer $token"}),data:
-            {
-              "password" : password,
-              "newPassword" : NewPassword,
-              "confirmPassword" : NewPassword2
-            });
-            print("Password password");
-            return responce.data;
-        } on DioException catch(e)
-        {
-           print("Error del password ${e.response?.data  ?? e.message} ");
-           return null;
+    Future<Map<String, dynamic>> updatePassword({
+      required String password,
+      required String newPassword,
+      required String confirmPassword,
+    }) async {
+      try {
+        final token = await secureStorage.read(key: 'auth_token');
+        if (token == null) {
+          throw Exception('No se encontró el token de autenticación');
         }
+
+        final response = await dio.post(
+          "/usuario/update-password",
+          options: Options(headers: {"Authorization": "Bearer $token"}),
+          data: {
+            "password": password,
+            "newPassword": newPassword,
+            "confirmPassword": confirmPassword,
+          },
+        );
+
+        return response.data;
+      } on DioException catch (e) {
+        if (e.response != null) {
+          final errorData = e.response?.data;
+          if (errorData is Map && errorData.containsKey('message')) {
+            throw Exception(errorData['message']);
+          }
+        }
+        throw Exception('Error al cambiar la contraseña: ${e.message}');
+      }
     }
-
-
-
-
-
 
 }

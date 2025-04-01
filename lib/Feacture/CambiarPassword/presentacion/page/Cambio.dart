@@ -5,67 +5,77 @@ import 'package:postgrado/Feacture/CambiarPassword/presentacion/estado/CambioRib
 import 'package:postgrado/Feacture/Login/Presentacion/Page/AlertDialogConection.dart';
 import 'package:postgrado/Feacture/Login/Presentacion/Page/network_info.dart';
 
-
 @RoutePage()
 class Cambio extends ConsumerStatefulWidget {
   const Cambio({super.key});
 
   @override
-  _CambioState createState() => _CambioState();
+  _CambioPasswordScreenState createState() => _CambioPasswordScreenState();
 }
 
-class _CambioState extends ConsumerState<Cambio> {
-   final TextEditingController passwordController = TextEditingController();
-   final TextEditingController newPasswordController = TextEditingController();
-   final TextEditingController confirmPasswordController = TextEditingController();
-   bool _isLoading = false;
-
-
+class _CambioPasswordScreenState extends ConsumerState<Cambio> {
   final _formKey = GlobalKey<FormState>();
+  final _passwordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
   bool _isObscureOld = true;
   bool _isObscureNew = true;
   bool _isObscureConfirm = true;
 
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
-  Future<void> _cambioPassword()
-   async
-   {
-      final hayInternet = await NetworkInfo().isConnected();
-      if(!hayInternet)
-      {
-         showDialog(context: context, builder: (BuildContext context) {
-           return ErroConection();
-         });
-         return;
-      }
-      final password = passwordController.text.trim();
-      final newPassword = newPasswordController.text.trim();
-      final confirmPassword= confirmPasswordController.text.trim();
-      try
-      {
-        await ref.read(cambioProvider.notifier).CambioPassword(password, newPassword, confirmPassword);
-        setState(() {
-          final snakBar = SnackBar(content: const Text("Se cambio la contraseña correctamente"),
-              action: SnackBarAction(label: 'Ok', onPressed: () {}));
-          ScaffoldMessenger.of(context).showSnackBar(snakBar);
-        });
-      }catch(e){
-        setState(() {
-          final snakBar = SnackBar(content: const Text("No se modifico la contraseña"),
-              action: SnackBarAction(label: 'Ok', onPressed: () {}));
-          ScaffoldMessenger.of(context).showSnackBar(snakBar);
-        });
-      }
-   }
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
 
+    try {
+      await ref.read(cambioProvider.notifier).cambioPassword(
+        password: _passwordController.text.trim(),
+        newPassword: _newPasswordController.text.trim(),
+        confirmPassword: _confirmPasswordController.text.trim(),
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Contraseña cambiada exitosamente'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Limpiar formulario después del éxito
+        _passwordController.clear();
+        _newPasswordController.clear();
+        _confirmPasswordController.clear();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final state = ref.watch(cambioProvider);
 
     return Scaffold(
-
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Cambio de Contraseña'),
+        centerTitle: true,
+      ),
       body: Stack(
         children: [
           Positioned.fill(
@@ -73,109 +83,118 @@ class _CambioState extends ConsumerState<Cambio> {
               opacity: 0.2,
               child: Image.asset(
                 "assets/edificio.png",
-                fit: BoxFit.contain,
+                fit: BoxFit.cover,
               ),
             ),
           ),
           SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.08),
+            padding: EdgeInsets.symmetric(
+              horizontal: screenSize.width * 0.08,
+              vertical: 20,
+            ),
+            child: Form(
+              key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: screenSize.height * 0.0),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 25),
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Cambio de Contraseña",
-                          style: TextStyle(
-                            fontSize: screenSize.width * 0.06,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          "Ingresa tu contraseña actual y la nueva",
-                          style: TextStyle(
-                            fontSize: screenSize.width * 0.04,
-                            color: Colors.grey[700],
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                  const SizedBox(height: 20),
+                  Text(
+                    "Cambio de Contraseña",
+                    style: TextStyle(
+                      fontSize: screenSize.width * 0.06,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
                   ),
-                  SizedBox(height: screenSize.height * 0.05),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Ingresa tu contraseña actual y la nueva contraseña",
+                    style: TextStyle(
+                      fontSize: screenSize.width * 0.04,
+                      color: Colors.grey[700],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 40),
 
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        _buildPasswordField("Contraseña Actual",passwordController, _isObscureOld, () {
-                          setState(() {
-                            _isObscureOld = !_isObscureOld;
-                          });
-                        }),
-                        SizedBox(height: 15),
-                        _buildPasswordField("Nueva Contraseña",newPasswordController, _isObscureNew, () {
-                          setState(() {
-                            _isObscureNew = !_isObscureNew;
-                          });
-                        }),
-                        SizedBox(height: 15),
-                        _buildPasswordField("Confirmar Nueva Contraseña",confirmPasswordController, _isObscureConfirm, () {
-                          setState(() {
-                            _isObscureConfirm = !_isObscureConfirm;
-                          });
-                        }),
-                        SizedBox(height: screenSize.height * 0.05),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                // Acción para cambiar la contraseña
-                                _isLoading ?  null: _cambioPassword();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Contraseña cambiada exitosamente")),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF003F77),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              elevation: 4,
-                              shadowColor: Colors.blueAccent.withOpacity(0.3),
-                            ),
-                            child:  _isLoading
-                               ? const CircularProgressIndicator(color: Colors.white,)
-                                :const Text("Cambiar contraseña",style: TextStyle(fontSize: 18,color: Colors.white),)
-                            ,
-                            // child: Text(
-                            //   "Cambiar Contraseña",
-                            //   style: TextStyle(
-                            //     fontSize: 18,
-                            //     fontWeight: FontWeight.bold,
-                            //     color: Colors.white,
-                            //   ),
-                            // ),
-                          ),
+                  // Campo contraseña actual
+                  _buildPasswordField(
+                    label: "Contraseña Actual",
+                    controller: _passwordController,
+                    isObscure: _isObscureOld,
+                    toggleVisibility: () => setState(() => _isObscureOld = !_isObscureOld),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor ingresa tu contraseña actual';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Campo nueva contraseña
+                  _buildPasswordField(
+                    label: "Nueva Contraseña",
+                    controller: _newPasswordController,
+                    isObscure: _isObscureNew,
+                    toggleVisibility: () => setState(() => _isObscureNew = !_isObscureNew),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor ingresa una nueva contraseña';
+                      }
+                      if (value.length < 8) {
+                        return 'La contraseña debe tener al menos 8 caracteres';
+                      }
+                      if (!value.contains(RegExp(r'[A-Z]'))) {
+                        return 'Debe contener al menos una mayúscula';
+                      }
+                      if (!value.contains(RegExp(r'[0-9]'))) {
+                        return 'Debe contener al menos un número';
+                      }
+                      if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+                        return 'Debe contener al menos un carácter especial';
+                      }
+                      return null;
+                    },
+                    helperText: 'Mínimo 8 caracteres con mayúsculas, números y caracteres especiales',
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Campo confirmar contraseña
+                  _buildPasswordField(
+                    label: "Confirmar Nueva Contraseña",
+                    controller: _confirmPasswordController,
+                    isObscure: _isObscureConfirm,
+                    toggleVisibility: () => setState(() => _isObscureConfirm = !_isObscureConfirm),
+                    validator: (value) {
+                      if (value != _newPasswordController.text) {
+                        return 'Las contraseñas no coinciden';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 40),
+
+                  // Botón de enviar
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: state.isLoading ? null : _submitForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF003F77),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
                         ),
-                      ],
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: state.isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                        "Cambiar Contraseña",
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
                     ),
                   ),
-                  SizedBox(height: screenSize.height * 0.1),
                 ],
               ),
             ),
@@ -185,26 +204,29 @@ class _CambioState extends ConsumerState<Cambio> {
     );
   }
 
-  Widget _buildPasswordField(String label,TextEditingController controllerEdit, bool isObscure, VoidCallback toggleVisibility) {
+  Widget _buildPasswordField({
+    required String label,
+    required TextEditingController controller,
+    required bool isObscure,
+    required VoidCallback toggleVisibility,
+    required String? Function(String?) validator,
+    String? helperText,
+  }) {
     return TextFormField(
-      controller: controllerEdit,
+      controller: controller,
       obscureText: isObscure,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.2),
+        fillColor: Colors.white,
         suffixIcon: IconButton(
           icon: Icon(isObscure ? Icons.visibility_off : Icons.visibility),
           onPressed: toggleVisibility,
         ),
+        helperText: helperText,
       ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return "Este campo no puede estar vacío";
-        }
-        return null;
-      },
+      validator: validator,
     );
   }
 }

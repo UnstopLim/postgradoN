@@ -1,14 +1,19 @@
 import 'package:postgrado/Feacture/CambiarPassword/data/repository/CambioRepository.dart';
 
-class CambioUseCase
-{
+class CambioUseCase {
   final CambioRepository cambioRepository;
+
   CambioUseCase(this.cambioRepository);
 
-  Future<Map<String,dynamic>?> execute(String password,String NewPassword,String NewPassword2)
-  async
-  {
-    return await cambioRepository.UpdatePassword(password, NewPassword, NewPassword2);
+  Future<Map<String, dynamic>> execute({
+    required String password,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    return await cambioRepository.updatePassword(
+      password: password,
+      newPassword: newPassword,
+      confirmPassword: confirmPassword,
+    );
   }
-
 }
