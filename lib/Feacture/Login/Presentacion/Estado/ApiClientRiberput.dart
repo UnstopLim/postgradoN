@@ -15,7 +15,7 @@ class AuthNotifier extends StateNotifier<String?>
       _loadToken();
     }
 
-    Future<bool> login(String username, String password)
+    Future<String?> login(String username, String password)
     async
     {
       try
@@ -33,14 +33,12 @@ class AuthNotifier extends StateNotifier<String?>
             state = token;
 
             print('Login exitoso. Token guardado.');
-            return true;
+            return null;
           } else {
-            print('Credenciales inválidas o respuesta incorrectas.');
-            return false;
+            return "Credenciales inválidas";
           }
       } catch (e) {
-        print('Error en login: $e');
-        return false;
+        return e.toString();
       }
     }
 

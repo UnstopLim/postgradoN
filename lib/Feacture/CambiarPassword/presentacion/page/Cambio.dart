@@ -2,8 +2,6 @@ import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:postgrado/Feacture/CambiarPassword/presentacion/estado/CambioRiberput.dart';
-import 'package:postgrado/Feacture/Login/Presentacion/Page/AlertDialogConection.dart';
-import 'package:postgrado/Feacture/Login/Presentacion/Page/network_info.dart';
 
 @RoutePage()
 class Cambio extends ConsumerStatefulWidget {

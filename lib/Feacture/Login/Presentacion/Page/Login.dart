@@ -59,69 +59,61 @@ class _LoginState extends ConsumerState<Login> {
   }
 
   Future<void> _handleLogin() async {
-
+    // Verificar conexión a internet
     final hayInternet = await NetworkInfo().isConnected();
     if (!hayInternet) {
       showDialog(
         context: context,
-        builder: (BuildContext context) {
-          return ErroConection();
-        },
+        builder: (BuildContext context) => ErroConection(),
       );
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
-
+    // Validar campos vacíos
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
-
     if (email.isEmpty || password.isEmpty) {
-      setState(() {
-        _isLoading = false;
-        final snakBar = SnackBar(content: const Text("Por favor ingrese su usuario y contraseña.",style: TextStyle(color: Colors.black),),
-            backgroundColor: Color(0xFFC3C3C3)
-            ,shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Por favor ingrese su usuario y contraseña"),
+          backgroundColor: const Color(0xFFC3C3C3),
         ),
-        margin: const EdgeInsets.all(16),
-        behavior: SnackBarBehavior.floating,
-        elevation: 10,
-        duration: const Duration(seconds: 3),
-        action: SnackBarAction(label: 'Ok', onPressed: () {}));
-        ScaffoldMessenger.of(context).showSnackBar(snakBar);
-      });
+      );
       return;
     }
 
+    setState(() => _isLoading = true);
+
     try {
-      await ref.read(authProvider.notifier).login(email, password);
-      final token = ref.read(authProvider);
-      if (token != null && token.isNotEmpty) {
+      final errorMessage = await ref.read(authProvider.notifier).login(email, password);
+
+      if (errorMessage == null) {
+        // Login exitoso
         await _saveCredentials();
         if (!mounted) return;
         context.router.replace(Home());
-      }
-      else
-      {
-        setState(() {
-          final snakBar = SnackBar(content: const Text("Usuario no encontrado"),
-              action: SnackBarAction(label: 'Ok', onPressed: () {}));
-          ScaffoldMessenger.of(context).showSnackBar(snakBar);
-        });
+      } else {
+        // Mostrar error del backend
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
-      setState(() {
-        final snakBar = SnackBar(content: const Text("Contraseña incorrecta"),
-            action: SnackBarAction(label: 'Ok', onPressed: () {}));
-        ScaffoldMessenger.of(context).showSnackBar(snakBar);
-      });
+      // Error inesperado
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error: ${e.toString()}"),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -307,11 +299,5 @@ class _LoginState extends ConsumerState<Login> {
         ),
       ),
     );
-
-
-
-
-
-
   }
 }

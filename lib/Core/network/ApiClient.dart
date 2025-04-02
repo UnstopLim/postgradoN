@@ -24,8 +24,9 @@ class ApiClient
            return responce.data;
         }on DioException catch(e)
         {
-            print("error en login : ${e.response?.data ?? e.message}");
-            return  null;
+          final errorMessage = e.response?.data?['message'] ?? "Error desconocido";
+          print("Error en login: $errorMessage");
+          throw errorMessage;
         }
     }
     //Enpoint de perfil

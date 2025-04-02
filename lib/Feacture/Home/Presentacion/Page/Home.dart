@@ -69,7 +69,7 @@ class _HomeState extends ConsumerState<Home> {
               children: [
                 const SizedBox(height: 20),
                 Image.asset(
-                  'assets/logo1.png',
+                  'assets/logoP.png',
                   height: 115,
                 ),
               ],
