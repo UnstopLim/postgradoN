@@ -97,6 +97,7 @@ flutter:
     - assets/pass1.png
     - assets/nueva-cuenta.png
     - assets/logoP.png
+    - assets/LOGON.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -19,8 +19,9 @@ class _HomeBodyState extends ConsumerState<HomeBody>
 {
   int _seconds = 60;
   String _token = "...";
-  bool _isGeneratingToken = false;
   Timer? _timer;
+  bool valueEstate=false;
+  String valueT="";
 
   @override
   void initState() {
@@ -31,7 +32,6 @@ class _HomeBodyState extends ConsumerState<HomeBody>
   Future<void> _fetchToken()
   async
   {
-
       final hayInternet = await NetworkInfo().isConnected();
       if(!hayInternet)
         {
@@ -43,14 +43,15 @@ class _HomeBodyState extends ConsumerState<HomeBody>
           return;
         }
       setState(() {
-        _isGeneratingToken = true;
+        valueEstate=true;
       });
       final tokenResponse = await ref.refresh(TokenProvider.future);
       if (tokenResponse != null) {
         setState(() {
           _token = tokenResponse.token ?? "Token no disponible";
           _seconds = _parseTtl(tokenResponse.ttlToken.toString());
-          _isGeneratingToken = false;
+          valueT="Generado";
+          valueEstate=false;
         });
         _startTimer();
       }
@@ -58,7 +59,7 @@ class _HomeBodyState extends ConsumerState<HomeBody>
       {
         setState(() {
           _token = "Error al obtener el token";
-          _isGeneratingToken = false;
+          valueEstate=true;
         });
       }
   }
@@ -77,6 +78,8 @@ class _HomeBodyState extends ConsumerState<HomeBody>
         } else {
           _token = ".....";
           _timer?.cancel();
+          valueEstate=true;
+          valueT="Expiro";
         }
       });
     });
@@ -139,7 +142,7 @@ class _HomeBodyState extends ConsumerState<HomeBody>
                   Image.asset("assets/pass1.png",
                       width: screenSize.width * 0.25, fit: BoxFit.contain),
                   SizedBox(height: 20),
-                  Text(" Token Generado",style: TextStyle(fontSize: 20,color: Colors.black),),
+                  Text(" Token ${valueT}",style: TextStyle(fontSize: 20,color: Colors.black),),
                   Text(
                     _token,
                     style: TextStyle(
@@ -167,7 +170,7 @@ class _HomeBodyState extends ConsumerState<HomeBody>
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _isGeneratingToken ? null : _fetchToken,
+                      onPressed: valueEstate ? _fetchToken : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF003667),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -175,7 +178,7 @@ class _HomeBodyState extends ConsumerState<HomeBody>
                         elevation: 5,
                       ),
                       child: Text(
-                        _isGeneratingToken ? "Generando..." : "Generar token",
+                        valueEstate ? "Generar token" : "Generar token",
                         style: TextStyle(fontSize: screenSize.width * 0.05, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                     ),

@@ -32,7 +32,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/logo1.png', width: 130),
+                Image.asset('assets/LOGON.png', width: 130),
               ],
             ),
           ),
