@@ -2,9 +2,10 @@ import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:postgrado/Feacture/Home/Presentacion/Widgeth/drawer.dart';
+
 import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+
 import 'package:postgrado/Feacture/Login/Presentacion/Page/AlertDialog.dart';
 import 'package:postgrado/Feacture/Login/Presentacion/Page/AlertDialogConection.dart';
 import 'package:postgrado/Feacture/Login/Presentacion/Page/network_info.dart';
@@ -21,7 +22,7 @@ class _HomeState extends ConsumerState<Home> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index, TabsRouter tabsRouter) async {
-    if (index == 3)
+    if (index == 4)
     {
       showDialog(context: context, builder: (context) => LogoutDialog(ref: ref));
     }
@@ -51,6 +52,7 @@ class _HomeState extends ConsumerState<Home> {
         HomeBody(),
         Perfil(),
         Cambio(),
+        Inscripccion(),
       ],
       appBarBuilder: (context, tabsRouter) => PreferredSize(
         preferredSize: Size.fromHeight(120),
@@ -110,8 +112,8 @@ class _HomeState extends ConsumerState<Home> {
                 items: <Widget>[
                   Icon(Icons.security_outlined, size: 30, color: Color(0xFF001D3A)),
                   Icon(Icons.person, size: 30, color: Color(0xFF001D3A)),
-                  Icon(Icons.password_outlined, size: 30, color: Color(
-                      0xFF001D3A)),
+                  Icon(Icons.password_outlined, size: 30, color: Color(0xFF001D3A)),
+                  Icon(Icons.app_registration,size: 30,color: Color(0xFF001D3A)),
                   Icon(Icons.exit_to_app, size: 30, color: Color(0xFF001D3A)),
                 ],
                 color: Color(0xFFFFFFFF),
