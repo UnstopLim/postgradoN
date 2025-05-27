@@ -15,7 +15,11 @@ class AppRouter extends $AppRouter {
       AutoRoute(page: HomeBody.page, path: 'home'),
       AutoRoute(page: Perfil.page, path: 'perfil'),
       AutoRoute(page: Cambio.page, path: 'configuracion'),
-      AutoRoute(page: Inscripccion.page,path: 'Inscripcciones'),
+      AutoRoute(page: Inscripccion.page,path: 'Inscripcciones',children: [
+        AutoRoute(page: Paso1Route.page, path: ''),
+        AutoRoute(page: Paso2Route.page),
+        AutoRoute(page: Paso3Route.page),
+      ]),
     ]),
   ];
 }
