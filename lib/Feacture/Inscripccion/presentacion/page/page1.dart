@@ -90,7 +90,7 @@ class _Paso1PageState extends State<Paso1Page> {
         children: [
           Row(
             children: [
-              Icon(icon, color: Colors.indigo, size: 28),
+              Icon(icon, color: Color(0xFF003465), size: 28),
               const SizedBox(width: 10),
               Text(
                 title,
@@ -105,7 +105,7 @@ class _Paso1PageState extends State<Paso1Page> {
             label: const Text("Escanear"),
             onPressed: onScan,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.indigo,
+              backgroundColor: Color(0xFF003465),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
@@ -146,7 +146,7 @@ class _Paso1PageState extends State<Paso1Page> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F8FC),
       appBar: AppBar(
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.white,
         title: const Text("Paso 1: Verificación de Carnet"),
       ),
       body: ListView(
@@ -186,7 +186,7 @@ class _Paso1PageState extends State<Paso1Page> {
                   : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                _canContinue ? Colors.indigo : Colors.grey.shade400,
+                _canContinue ? Color(0xFF003465) : Colors.grey.shade400,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 textStyle: const TextStyle(fontSize: 16),
