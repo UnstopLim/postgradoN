@@ -6,7 +6,7 @@ import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart
 import 'package:permission_handler/permission_handler.dart';
 import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
 
-@RoutePage()
+//@RoutePage()
 class Paso1Page extends StatefulWidget {
   const Paso1Page({super.key});
 

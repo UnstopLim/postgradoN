@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:postgrado/Core/Navigator/AppRouter.dart';
 import 'package:postgrado/Core/di/service_locator.dart';
+import 'package:postgrado/Feacture/Inscripccion/presentacion/page/page1.dart';
+import 'package:postgrado/Feacture/Inscripccion/presentacion/page/page2.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +35,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       routerConfig: _app_router.config(),
-      //home: TimerButtonPage(),
+      //home: Paso2Page(),
     );
   }
 }

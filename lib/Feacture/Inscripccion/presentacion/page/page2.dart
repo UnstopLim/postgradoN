@@ -5,7 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
-@RoutePage()
+//@RoutePage()
 class Paso2Page extends StatefulWidget {
   const Paso2Page({super.key});
 
