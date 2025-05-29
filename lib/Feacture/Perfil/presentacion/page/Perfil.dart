@@ -28,7 +28,8 @@ class Perfil extends ConsumerWidget {
               child: perfilAsync.when(
                 data: (perfil) {
                   if (perfil == null) {
-                    return Center(child: Text("Error al cargar los datos."));
+
+                    return  Center(child:  Text("Datos no encontrados. error de servidores",style: TextStyle(),));
                   }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,

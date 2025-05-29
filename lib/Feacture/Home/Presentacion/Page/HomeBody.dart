@@ -58,7 +58,7 @@ class _HomeBodyState extends ConsumerState<HomeBody>
       else
       {
         setState(() {
-          _token = "Error al obtener el token";
+          _token = "Error";
           valueEstate=true;
         });
       }

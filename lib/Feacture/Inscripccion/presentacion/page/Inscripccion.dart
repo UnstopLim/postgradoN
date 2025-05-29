@@ -19,6 +19,8 @@ class _InscripccionState extends State<Inscripccion>
 {
       String? _frontImagePath;
       String? _backImagePath;
+      String? _fromTituloImage;
+      String? _back_tituloImage;
 
       Future<void> SnackVarVar(String valor) async
       {
@@ -27,7 +29,7 @@ class _InscripccionState extends State<Inscripccion>
         );
       }
 
-      Future<void> _scanDocument(bool isFront) async
+      Future<void> _scanDocument(int num) async
       {
           final status = await Permission.camera.request();
           if (!status.isGranted) {
@@ -41,7 +43,23 @@ class _InscripccionState extends State<Inscripccion>
               if (result.images.isNotEmpty) {
                   setState(()
                   {
-                    if (isFront) {_frontImagePath = result.images.first;} else {_backImagePath = result.images.first;}
+                    switch(num)
+                    {
+                      case 1 :
+                        _frontImagePath = result.images.first;
+                        break;
+                      case 2 :
+                        _backImagePath = result.images.first;
+                        break;
+                      case 3 :
+                        _fromTituloImage = result.images.first;
+                        break;
+                      case 4 :
+                        _back_tituloImage = result.images.first;
+                        break;
+
+                    }
+                    //if (isFront) {_frontImagePath = result.images.first;} else {_backImagePath = result.images.first;}
                   });
               } else {
                   SnackVarVar("No se capturó ninguna imagen.");
@@ -66,7 +84,7 @@ class _InscripccionState extends State<Inscripccion>
         );
       }
 
-      bool get _canContinue => _frontImagePath != null && _backImagePath != null;
+      bool get _canContinue => _frontImagePath != null && _backImagePath != null && _fromTituloImage != null && _back_tituloImage != null;
 
       Widget _buildScanCard({required String title, required VoidCallback onScan, required String? imagePath, required IconData icon,})
       {
@@ -188,32 +206,17 @@ class _InscripccionState extends State<Inscripccion>
               const SizedBox(height: 20),
               _buildScanCard(
                 title: "Anverso del carnet",
-                onScan: () => _scanDocument(true),
+                onScan: () => _scanDocument(1),
                 imagePath: _frontImagePath,
                 icon: Icons.credit_card_rounded,
               ),
               _buildScanCard(
                 title: "Reverso del carnet",
-                onScan: () => _scanDocument(false),
+                onScan: () => _scanDocument(2),
                 imagePath: _backImagePath,
                 icon: Icons.flip_camera_android_rounded,
               ),
               const SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.arrow_forward_rounded),
-                  label: const Text("Siguiente"),
-                  onPressed: _canContinue ? () => context.pushRoute(const Paso2Route()) : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _canContinue ? const Color(0xFF003465) : Colors.grey.shade400,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    textStyle: const TextStyle(fontSize: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-              ),
             ],
           ),
           _buildExpansionTile(
@@ -229,10 +232,42 @@ class _InscripccionState extends State<Inscripccion>
             stepNumber: "3",
             title: "Escanear Documentación académica",
             children: [
-              const ListTile(title: Text("Sube el comprobante")),
-              const ListTile(title: Text("Verifica tu pago")),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Text(
+                  "Por favor escanea ambos lados de documentacion academica.",
+                  style: TextStyle(fontSize: 16, color: Colors.black87),
+                ),
+              ),
+              const SizedBox(height: 20),
+              _buildScanCard(
+                title: "Anverso del Titulo",
+                onScan: () => _scanDocument(3),
+                imagePath: _fromTituloImage,
+                icon: Icons.credit_card_rounded,
+              ),
+              _buildScanCard(
+                title: "Reverso del Titulo",
+                onScan: () => _scanDocument(4),
+                imagePath: _back_tituloImage,
+                icon: Icons.flip_camera_android_rounded,
+              ),
+              const SizedBox(height: 30),
             ],
           ),
+          //aka laburaras
+          const SizedBox(height: 30,),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.arrow_forward_rounded), label: const Text("Siguiente"), onPressed: _canContinue ? () => SnackVarVar("Datos enviados a la api") : null,
+              style: ElevatedButton.styleFrom(backgroundColor: _canContinue ? const Color(0xFF003465) : Colors.grey.shade400, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 16), textStyle: const TextStyle(fontSize: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ),
+          const SizedBox(height: 30,)
+
+
         ],
       ),
     );
