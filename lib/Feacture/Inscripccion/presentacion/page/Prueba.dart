@@ -3,11 +3,9 @@ import 'package:camera/camera.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
-import 'dart:typed_data';
-import 'dart:ui' as ui;
 import 'dart:async';
 
-// CLASE PRINCIPAL: Widget con estado que maneja la detección facial en tiempo real
+
 class Page1 extends StatefulWidget {
   const Page1({super.key});
 
@@ -15,33 +13,30 @@ class Page1 extends StatefulWidget {
   State<Page1> createState() => _Page1State();
 }
 
-// ESTADO DE LA APLICACIÓN: Implementa WidgetsBindingObserver para manejar el ciclo de vida de la app
+
 class _Page1State extends State<Page1> with WidgetsBindingObserver {
+  CameraController? _cameraController;
+  List<CameraDescription>? _cameras;
+  bool _isCameraInitialized = false;
 
-  // ========== VARIABLES DE CONTROL DE CÁMARA ==========
-  CameraController? _cameraController;      // Controlador para manejar la cámara
-  List<CameraDescription>? _cameras;        // Lista de cámaras disponibles en el dispositivo
-  bool _isCameraInitialized = false;        // Flag para saber si la cámara está lista
-
-  // ========== VARIABLES DE ESTADO DE LA APLICACIÓN ==========
-  bool _isLoading = false;                  // Flag para mostrar indicador de carga
-  XFile? _capturedImage;                    // Almacena la imagen capturada
+  bool _isLoading = false;
+  XFile? _capturedImage;
   bool _faceDetected = false;               // Flag que indica si se detectó un rostro
   bool _realPersonDetected = false;         // Flag que indica si se detectó una persona real
   String _detectionStatus = '';             // Mensaje de estado para mostrar al usuario
 
-  // ========== VARIABLES PARA ANÁLISIS TEMPORAL ==========
+
   Timer? _detectionTimer;                   // Timer que ejecuta análisis cada 800ms
   bool _isAnalyzing = false;                // Flag para evitar análisis múltiples simultáneos
 
   // ========== CONFIGURACIÓN DEL DETECTOR FACIAL ML KIT ==========
   final FaceDetector _faceDetector = FaceDetector(
     options: FaceDetectorOptions(
-      enableContours: true,        // Habilita detección de contornos faciales
+      enableContours: true,
       enableLandmarks: true,       // Habilita detección de puntos de referencia (ojos, nariz, boca)
       enableClassification: true,  // Habilita clasificación (sonrisa, ojos abiertos)
       enableTracking: true,        // Habilita seguimiento de rostros entre frames
-      minFaceSize: 0.15,          // Tamaño mínimo del rostro (15% de la imagen)
+      minFaceSize: 0.05,          // Tamaño mínimo del rostro (15% de la imagen)
       performanceMode: FaceDetectorMode.fast, // Modo rápido para tiempo real
     ),
   );

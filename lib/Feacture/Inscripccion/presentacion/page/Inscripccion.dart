@@ -3,207 +3,353 @@ import 'dart:io';
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:postgrado/Core/Navigator/AppRouter.gr.dart';
+import 'package:postgrado/Feacture/Inscripccion/presentacion/state/InscripccionProvider.dart';
 
 @RoutePage()
-class Inscripccion extends StatefulWidget {
+class Inscripccion extends ConsumerStatefulWidget {
   const Inscripccion({super.key});
 
   @override
-  State<Inscripccion> createState() => _InscripccionState();
+  ConsumerState<Inscripccion> createState() => _InscripccionState();
 }
 
-class _InscripccionState extends State<Inscripccion>
-{
-      String? _frontImagePath;
-      String? _backImagePath;
-      String? _fromTituloImage;
-      String? _back_tituloImage;
+class _InscripccionState extends ConsumerState<Inscripccion> {
+  String? _frontImagePath;
+  String? _backImagePath;
+  String? _fromTituloImage;
+  String? _back_tituloImage;
 
-      Future<void> SnackVarVar(String valor) async
-      {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("${valor}")),
-        );
-      }
+  Future<void> SnackVarVar(String valor) async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("${valor}")),
+    );
+  }
 
-      Future<void> _scanDocument(int num) async
-      {
-          final status = await Permission.camera.request();
-          if (!status.isGranted) {
-                SnackVarVar("Permiso de cámara denegado");
-            return;
+  Future<void> _scanDocument(int num) async {
+    final status = await Permission.camera.request();
+    if (!status.isGranted) {
+      SnackVarVar("Permiso de cámara denegado");
+      return;
+    }
+    final scanner = DocumentScanner(
+      options: DocumentScannerOptions(
+        documentFormat: DocumentFormat.jpeg,
+        mode: ScannerMode.filter,
+        pageLimit: 1,
+      ),
+    );
+    try {
+      final result = await scanner.scanDocument();
+      if (result.images.isNotEmpty) {
+        setState(() {
+          switch (num) {
+            case 1:
+              _frontImagePath = result.images.first;
+              break;
+            case 2:
+              _backImagePath = result.images.first;
+              break;
+            case 3:
+              _fromTituloImage = result.images.first;
+              break;
+            case 4:
+              _back_tituloImage = result.images.first;
+              break;
           }
-          final scanner = DocumentScanner(options: DocumentScannerOptions(documentFormat: DocumentFormat.jpeg, mode: ScannerMode.filter, pageLimit: 1,),);
-          try
-          {
-              final result = await scanner.scanDocument();
-              if (result.images.isNotEmpty) {
-                  setState(()
-                  {
-                    switch(num)
-                    {
-                      case 1 :
-                        _frontImagePath = result.images.first;
-                        break;
-                      case 2 :
-                        _backImagePath = result.images.first;
-                        break;
-                      case 3 :
-                        _fromTituloImage = result.images.first;
-                        break;
-                      case 4 :
-                        _back_tituloImage = result.images.first;
-                        break;
-
-                    }
-                    //if (isFront) {_frontImagePath = result.images.first;} else {_backImagePath = result.images.first;}
-                  });
-              } else {
-                  SnackVarVar("No se capturó ninguna imagen.");
-              }
-          } catch (e) {
-                  SnackVarVar("Error al escanear: $e");
-          } finally {
-            scanner.close();
-          }
+        });
+      } else {
+        SnackVarVar("No se capturó ninguna imagen.");
       }
+    } catch (e) {
+      SnackVarVar("Error al escanear: $e");
+    } finally {
+      scanner.close();
+    }
+  }
 
-      void _showFullScreenImage(String imagePath) {
-        showDialog(context: context, barrierColor: Colors.black87,
-          builder: (context) {
-            return GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: Dialog(backgroundColor: Colors.transparent, insetPadding: EdgeInsets.zero,
-                child: InteractiveViewer(child: Image.file(File(imagePath), fit: BoxFit.contain,),),
+  void _showFullScreenImage(String imagePath) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (context) {
+        return GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: EdgeInsets.zero,
+            child: InteractiveViewer(
+              child: Image.file(
+                File(imagePath),
+                fit: BoxFit.contain,
               ),
-            );
-          },
-        );
-      }
-
-      bool get _canContinue => _frontImagePath != null && _backImagePath != null && _fromTituloImage != null && _back_tituloImage != null;
-
-      Widget _buildScanCard({required String title, required VoidCallback onScan, required String? imagePath, required IconData icon,})
-      {
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Colors.indigo.shade100),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: const [
-              BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
-            ],
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+        );
+      },
+    );
+  }
+
+  bool get _canContinue =>
+      _frontImagePath != null &&
+          _backImagePath != null &&
+          _fromTituloImage != null &&
+          _back_tituloImage != null;
+
+  // Función para enviar las imágenes
+  Future<void> _uploadImages() async {
+    if (!_canContinue) {
+      SnackVarVar("Por favor, escanea todas las imágenes requeridas");
+      return;
+    }
+    try {
+      await ref.read(inscripcionProvider.notifier).uploadImages(
+        frontImagePath: _frontImagePath!,
+        backImagePath: _backImagePath!,
+        frontTituloPath: _fromTituloImage!,
+        backTituloPath: _back_tituloImage!,
+      );
+    } catch (e) {
+      SnackVarVar("Error al subir imágenes: $e");
+    }
+  }
+
+  // Función para obtener márgenes responsivos
+  EdgeInsets _getResponsiveMargin() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth < 360) {
+      // Pantallas muy pequeñas
+      return const EdgeInsets.symmetric(horizontal: 12, vertical: 8);
+    } else if (screenWidth < 400) {
+      // Pantallas pequeñas
+      return const EdgeInsets.symmetric(horizontal: 16, vertical: 10);
+    } else {
+      // Pantallas normales y grandes
+      return const EdgeInsets.symmetric(horizontal: 20, vertical: 12);
+    }
+  }
+
+  // Función para obtener padding responsivo
+  EdgeInsets _getResponsivePadding() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth < 360) {
+      return const EdgeInsets.all(12);
+    } else if (screenWidth < 400) {
+      return const EdgeInsets.all(14);
+    } else {
+      return const EdgeInsets.all(16);
+    }
+  }
+
+  // Función para obtener tamaño de fuente responsivo
+  double _getResponsiveFontSize(double baseSize) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth < 360) {
+      return baseSize - 2;
+    } else if (screenWidth < 400) {
+      return baseSize - 1;
+    } else {
+      return baseSize;
+    }
+  }
+
+  // Función para obtener altura de imagen responsiva
+  double _getResponsiveImageHeight() {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    if (screenHeight < 700 || screenWidth < 360) {
+      return 150; // Pantallas pequeñas
+    } else if (screenHeight < 800) {
+      return 180; // Pantallas medianas
+    } else {
+      return 200; // Pantallas grandes
+    }
+  }
+
+  Widget _buildScanCard({
+    required String title,
+    required VoidCallback onScan,
+    required String? imagePath,
+    required IconData icon,
+  }) {
+    return Container(
+      margin: _getResponsiveMargin(),
+      padding: _getResponsivePadding(),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.indigo.shade100),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+              color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Icon(icon, color: const Color(0xFF003465), size: 28),
-                  const SizedBox(width: 10),
-                  Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                ],
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.camera_alt_outlined),
-                label: const Text("Escanear"),
-                onPressed: onScan,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF003465),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              Icon(icon, color: const Color(0xFF003465), size: _getResponsiveFontSize(28)),
+              SizedBox(width: MediaQuery.of(context).size.width < 360 ? 8 : 10),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: _getResponsiveFontSize(18),
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
               ),
-              const SizedBox(height: 14),
-              if (imagePath != null)
-                GestureDetector(
-                  onTap: () => _showFullScreenImage(imagePath),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.file(
-                      File(imagePath),
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                )
-              else
-                Container(
-                  height: 200,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: const Text("Aún no escaneado", style: TextStyle(color: Colors.grey)),
-                ),
             ],
           ),
-        );
-      }
-
-        Widget _buildExpansionTile({required String stepNumber, required String title, required List<Widget> children,})
-        {
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 6)),
-              ],
+          SizedBox(height: MediaQuery.of(context).size.width < 360 ? 8 : 10),
+          ElevatedButton.icon(
+            icon: Icon(
+              Icons.camera_alt_outlined,
+              size: _getResponsiveFontSize(20),
             ),
-            child: Theme(
-              data: Theme.of(context).copyWith(
-                dividerColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
+            label: Text(
+              "Escanear",
+              style: TextStyle(fontSize: _getResponsiveFontSize(16)),
+            ),
+            onPressed: onScan,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF003465),
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(
+                vertical: MediaQuery.of(context).size.width < 360 ? 10 : 12,
               ),
-              child: ExpansionTile(
-                leading: CircleAvatar(
-                  backgroundColor: const Color(0xFF003465),
-                  child: Text(stepNumber, style: const TextStyle(color: Colors.white)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+          ),
+          SizedBox(height: MediaQuery.of(context).size.width < 360 ? 10 : 14),
+          if (imagePath != null)
+            GestureDetector(
+              onTap: () => _showFullScreenImage(imagePath),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.file(
+                  File(imagePath),
+                  height: _getResponsiveImageHeight(),
+                  fit: BoxFit.cover,
                 ),
-                title: Text(title,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF003465))),
-                iconColor: const Color(0xFF003465),
-                collapsedIconColor: Colors.grey.shade600,
-                childrenPadding: const EdgeInsets.symmetric(vertical: 10),
-                expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                children: children,
+              ),
+            )
+          else
+            Container(
+              height: _getResponsiveImageHeight(),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Text(
+                "Aún no escaneado",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: _getResponsiveFontSize(14),
+                ),
               ),
             ),
-          );
-        }
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExpansionTile({
+    required String stepNumber,
+    required String title,
+    required List<Widget> children,
+  }) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: screenWidth < 360 ? 12 : 16, vertical: screenWidth < 360 ? 6 : 8,),
+      decoration: BoxDecoration(
+        color: Color(0xffced1d6),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 6)),],
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+              leading: CircleAvatar(
+                backgroundColor:  const Color(0xFF0056A6),
+                radius: screenWidth < 360 ? 18 : 20,
+                child: Text(stepNumber, style: TextStyle(color: Colors.white, fontSize: _getResponsiveFontSize(16),),),
+              ),
+              title: Text(title, style: TextStyle(fontSize: _getResponsiveFontSize(18), fontWeight: FontWeight.bold, color: Color(0xFF000407),),),
+              iconColor: const Color(0xFF003465),
+              collapsedIconColor: Colors.grey.shade600,
+              childrenPadding: EdgeInsets.symmetric(vertical: screenWidth < 360 ? 8 : 10,),
+              expandedCrossAxisAlignment: CrossAxisAlignment.start,
+              children: children,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Escuchar el estado de la inscripción
+    ref.listen<InscripcionState>(inscripcionProvider, (previous, next) {
+      if (next.isSuccess) {
+        SnackVarVar("¡Imágenes enviadas exitosamente!");
+        // Aquí puedes navegar a la siguiente pantalla si es necesario
+        // context.router.push(SiguientePantallaRoute());
+      } else if (next.error != null) {
+        SnackVarVar("Error: ${next.error}");
+      }
+    });
+
+    final inscripcionState = ref.watch(inscripcionProvider);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text("Inscripción"),backgroundColor: Colors.white,),
+      appBar: AppBar(
+        title: Text(
+          "Inscripción",
+          style: TextStyle(fontSize: _getResponsiveFontSize(20)),
+        ),
+        backgroundColor: Colors.white,
+        elevation: screenWidth < 360 ? 1 : 2,
+      ),
       body: ListView(
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth < 360 ? 4 : 0,
+        ),
         children: [
           _buildExpansionTile(
             stepNumber: "1",
             title: "Escanear carnet",
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth < 360 ? 16.0 : 20.0,
+                ),
                 child: Text(
                   "Para continuar con tu inscripción, por favor escanea ambos lados de tu carnet de identidad.",
-                  style: TextStyle(fontSize: 16, color: Colors.black87),
+                  style: TextStyle(
+                    fontSize: _getResponsiveFontSize(16),
+                    color: Colors.black87,
+                    height: 1.4,
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: screenWidth < 360 ? 16 : 20),
               _buildScanCard(
                 title: "Anverso del carnet",
                 onScan: () => _scanDocument(1),
@@ -216,30 +362,57 @@ class _InscripccionState extends State<Inscripccion>
                 imagePath: _backImagePath,
                 icon: Icons.flip_camera_android_rounded,
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: screenWidth < 360 ? 20 : 30),
             ],
           ),
           _buildExpansionTile(
             stepNumber: "2",
             title: "Foto 4X4",
             children: [
-              const ListTile(title: Text("Sube tus certificados")),
-              const ListTile(title: Text("Documentos adicionales")),
-              Image.asset("assets/edificio.png", fit: BoxFit.contain),
+              ListTile(
+                title: Text(
+                  "Sube tus certificados",
+                  style: TextStyle(fontSize: _getResponsiveFontSize(16)),
+                ),
+                dense: screenWidth < 360,
+              ),
+              ListTile(
+                title: Text(
+                  "Documentos adicionales",
+                  style: TextStyle(fontSize: _getResponsiveFontSize(16)),
+                ),
+                dense: screenWidth < 360,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth < 360 ? 12 : 16,
+                ),
+                child: Image.asset(
+                  "assets/edificio.png",
+                  fit: BoxFit.contain,
+                  height: screenHeight < 700 ? 120 : 150,
+                ),
+              ),
             ],
           ),
           _buildExpansionTile(
             stepNumber: "3",
             title: "Escanear Documentación académica",
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth < 360 ? 16.0 : 20.0,
+                ),
                 child: Text(
                   "Por favor escanea ambos lados de documentacion academica.",
-                  style: TextStyle(fontSize: 16, color: Colors.black87),
+                  style: TextStyle(
+                    fontSize: _getResponsiveFontSize(16),
+                    color: Colors.black87,
+                    height: 1.4,
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: screenWidth < 360 ? 16 : 20),
               _buildScanCard(
                 title: "Anverso del Titulo",
                 onScan: () => _scanDocument(3),
@@ -252,22 +425,50 @@ class _InscripccionState extends State<Inscripccion>
                 imagePath: _back_tituloImage,
                 icon: Icons.flip_camera_android_rounded,
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: screenWidth < 360 ? 20 : 30),
             ],
           ),
-          //aka laburaras
-          const SizedBox(height: 30,),
+          SizedBox(height: screenWidth < 360 ? 20 : 30),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth < 360 ? 16.0 : 20.0,
+            ),
             child: ElevatedButton.icon(
-              icon: const Icon(Icons.arrow_forward_rounded), label: const Text("Siguiente"), onPressed: _canContinue ? () => SnackVarVar("Datos enviados a la api") : null,
-              style: ElevatedButton.styleFrom(backgroundColor: _canContinue ? const Color(0xFF003465) : Colors.grey.shade400, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 16), textStyle: const TextStyle(fontSize: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              icon: inscripcionState.isLoading
+                  ? SizedBox(
+                width: screenWidth < 360 ? 14 : 16,
+                height: screenWidth < 360 ? 14 : 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+                  : Icon(
+                Icons.arrow_forward_rounded,
+                size: _getResponsiveFontSize(20),
+              ),
+              label: Text(
+                inscripcionState.isLoading ? "Enviando..." : "Siguiente",
+                style: TextStyle(fontSize: _getResponsiveFontSize(16)),
+              ),
+              onPressed: (_canContinue && !inscripcionState.isLoading)
+                  ? _uploadImages
+                  : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: (_canContinue && !inscripcionState.isLoading)
+                    ? const Color(0xFF003465)
+                    : Colors.grey.shade400,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(
+                  vertical: screenWidth < 360 ? 14 : 16,
+                ),
+                textStyle: TextStyle(fontSize: _getResponsiveFontSize(16)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ),
-          const SizedBox(height: 30,)
-
-
+          SizedBox(height: screenWidth < 360 ? 20 : 30)
         ],
       ),
     );
