@@ -109,46 +109,52 @@ class ApiClient
       required String backImagePath,
       required String frontTituloPath,
       required String backTituloPath,
-    })
-    async {
-        try
-        {
-          final token = await secureStorage.read(key: 'auth_token');
-          if(token==null)
-          {
-              throw Exception("No se encontro el token de autorizacion");
-          }
-
-          FormData formData = FormData.fromMap({
-            'carnet_anverso': await MultipartFile.fromFile(frontImagePath, filename: 'carnet_anverso.jpg',),
-            'carnet_reverso': await MultipartFile.fromFile(backImagePath, filename: 'carnet_reverso.jpg',),
-            'titulo_anverso': await MultipartFile.fromFile(frontTituloPath, filename: 'titulo_anverso.jpg',),
-            'titulo_reverso': await MultipartFile.fromFile(backTituloPath, filename: 'titulo_reverso.jpg',),
-          });
-
-          final response = await dio.post(
-            "/imeges",
-            data: formData,
-            options: Options(
-              headers: {
-                'Authorization': 'Bearer $token',
-                'Content-Type': 'multipart/form-data',
-              },
-            ),
-          );
-
-          return response.data;
-        } on DioException catch (e) {
-          final errorMessage = e.response?.data?['message'] ?? "Error al subir imágenes";
-          print("Error en uploadImages: $errorMessage");
-          throw errorMessage;
+      required String expiryDate, // NUEVO PARÁMETRO
+    }) async {
+      try {
+        final token = await secureStorage.read(key: 'auth_token');
+        if (token == null) {
+          throw Exception("No se encontró el token de autorización");
         }
+
+        // FORMDATA ACTUALIZADO - Ahora incluye la fecha
+        FormData formData = FormData.fromMap({
+          'carnet_anverso': await MultipartFile.fromFile(
+            frontImagePath,
+            filename: 'carnet_anverso.jpg',
+          ),
+          'carnet_reverso': await MultipartFile.fromFile(
+            backImagePath,
+            filename: 'carnet_reverso.jpg',
+          ),
+          'titulo_anverso': await MultipartFile.fromFile(
+            frontTituloPath,
+            filename: 'titulo_anverso.jpg',
+          ),
+          'titulo_reverso': await MultipartFile.fromFile(
+            backTituloPath,
+            filename: 'titulo_reverso.jpg',
+          ),
+          'fecha_vencimiento': expiryDate, // AGREGAR LA FECHA
+        });
+
+        final response = await dio.post(
+          "/imeges", // Nota: podrías corregir a "/images" si es un typo
+          data: formData,
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'multipart/form-data',
+            },
+          ),
+        );
+
+        return response.data;
+      } on DioException catch (e) {
+        final errorMessage = e.response?.data?['message'] ?? "Error al subir imágenes";
+        print("Error en uploadImages: $errorMessage");
+        throw errorMessage;
+      }
     }
-
-
-
-
-
-
 
 }

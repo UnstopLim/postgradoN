@@ -1,8 +1,8 @@
+// 1. ACTUALIZACIÓN EN InscripccionProvider.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:postgrado/Core/di/service_locator.dart';
 import 'package:postgrado/Feacture/Inscripccion/domain/Case_Use/UploadImagesUseCase.dart';
 
-// Estado para el proceso de subida de imágenes
 class InscripcionState {
   final bool isLoading;
   final String? error;
@@ -31,17 +31,18 @@ class InscripcionState {
   }
 }
 
-// Notifier para manejar el estado
 class InscripcionNotifier extends StateNotifier<InscripcionState> {
   final UploadImagesUseCase uploadImagesUseCase;
 
   InscripcionNotifier(this.uploadImagesUseCase) : super(InscripcionState());
 
+  // MÉTODO ACTUALIZADO - Ahora incluye la fecha de vencimiento
   Future<void> uploadImages({
     required String frontImagePath,
     required String backImagePath,
     required String frontTituloPath,
     required String backTituloPath,
+    required String expiryDate, // NUEVO PARÁMETRO
   }) async {
     state = state.copyWith(isLoading: true, error: null, isSuccess: false);
 
@@ -51,6 +52,7 @@ class InscripcionNotifier extends StateNotifier<InscripcionState> {
         backImagePath: backImagePath,
         frontTituloPath: frontTituloPath,
         backTituloPath: backTituloPath,
+        expiryDate: expiryDate, // PASAR LA FECHA
       );
 
       state = state.copyWith(
@@ -72,7 +74,6 @@ class InscripcionNotifier extends StateNotifier<InscripcionState> {
   }
 }
 
-// Provider para el estado de inscripción
 final inscripcionProvider = StateNotifierProvider<InscripcionNotifier, InscripcionState>((ref) {
   return InscripcionNotifier(getIt<UploadImagesUseCase>());
 });

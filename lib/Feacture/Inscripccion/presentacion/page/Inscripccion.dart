@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:postgrado/Feacture/Inscripccion/presentacion/state/InscripccionProvider.dart';
+import 'package:intl/intl.dart';
 
 @RoutePage()
 class Inscripccion extends ConsumerStatefulWidget {
@@ -21,6 +22,7 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
   String? _backImagePath;
   String? _fromTituloImage;
   String? _back_tituloImage;
+  DateTime? _selectedExpiryDate; // Nueva variable para fecha de vencimiento
 
   Future<void> SnackVarVar(String valor) async {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -70,6 +72,36 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
     }
   }
 
+  // Nueva función para seleccionar fecha de vencimiento
+  Future<void> _selectExpiryDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(Duration(days: 365)), // Un año desde hoy
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 365 * 20)), // 20 años máximo
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: const Color(0xFF003465),
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+            dialogBackgroundColor: Colors.white,
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null && picked != _selectedExpiryDate) {
+      setState(() {
+        _selectedExpiryDate = picked;
+      });
+    }
+  }
+
   void _showFullScreenImage(String imagePath) {
     showDialog(
       context: context,
@@ -92,24 +124,30 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
     );
   }
 
+  // Actualizada la condición para incluir la fecha de vencimiento
   bool get _canContinue =>
       _frontImagePath != null &&
           _backImagePath != null &&
           _fromTituloImage != null &&
-          _back_tituloImage != null;
+          _back_tituloImage != null &&
+          _selectedExpiryDate != null; // Agregada condición de fecha
 
-  // Función para enviar las imágenes
+  // Función para enviar las imágenes (actualizada para incluir fecha)
   Future<void> _uploadImages() async {
     if (!_canContinue) {
-      SnackVarVar("Por favor, escanea todas las imágenes requeridas");
+      SnackVarVar("Por favor, escanea todas las imágenes y selecciona la fecha de vencimiento");
       return;
     }
     try {
+      // Formatear la fecha para envío a la API
+      String expiryDateString = DateFormat('yyyy-MM-dd').format(_selectedExpiryDate!);
+
       await ref.read(inscripcionProvider.notifier).uploadImages(
         frontImagePath: _frontImagePath!,
         backImagePath: _backImagePath!,
         frontTituloPath: _fromTituloImage!,
         backTituloPath: _back_tituloImage!,
+        expiryDate: expiryDateString, // Nuevo parámetro
       );
     } catch (e) {
       SnackVarVar("Error al subir imágenes: $e");
@@ -263,6 +301,97 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
     );
   }
 
+  // Nueva función para el card de fecha de vencimiento (adaptada con responsividad)
+  Widget _buildExpiryDateCard() {
+    return Container(
+      margin: _getResponsiveMargin(),
+      padding: _getResponsivePadding(),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.indigo.shade100),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.calendar_today, color: const Color(0xFF003465), size: _getResponsiveFontSize(28)),
+              SizedBox(width: MediaQuery.of(context).size.width < 360 ? 8 : 10),
+              Expanded(
+                child: Text(
+                  "Fecha de vencimiento del carnet",
+                  style: TextStyle(
+                    fontSize: _getResponsiveFontSize(18),
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: MediaQuery.of(context).size.width < 360 ? 8 : 10),
+          ElevatedButton.icon(
+            icon: Icon(
+              Icons.date_range_outlined,
+              size: _getResponsiveFontSize(20),
+            ),
+            label: Text(
+              "Seleccionar fecha",
+              style: TextStyle(fontSize: _getResponsiveFontSize(16)),
+            ),
+            onPressed: _selectExpiryDate,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF003465),
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(
+                vertical: MediaQuery.of(context).size.width < 360 ? 10 : 12,
+              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          ),
+          SizedBox(height: MediaQuery.of(context).size.width < 360 ? 10 : 14),
+          Container(
+            padding: EdgeInsets.all(MediaQuery.of(context).size.width < 360 ? 12 : 16),
+            decoration: BoxDecoration(
+              color: _selectedExpiryDate != null ? Colors.green.shade50 : Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                  color: _selectedExpiryDate != null ? Colors.green.shade300 : Colors.grey.shade300
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  _selectedExpiryDate != null ? Icons.check_circle : Icons.schedule,
+                  color: _selectedExpiryDate != null ? Colors.green : Colors.grey,
+                  size: _getResponsiveFontSize(20),
+                ),
+                SizedBox(width: MediaQuery.of(context).size.width < 360 ? 8 : 12),
+                Expanded(
+                  child: Text(
+                    _selectedExpiryDate != null
+                        ? "Fecha seleccionada: ${DateFormat('dd/MM/yyyy').format(_selectedExpiryDate!)}"
+                        : "Aún no seleccionada",
+                    style: TextStyle(
+                      color: _selectedExpiryDate != null ? Colors.green.shade700 : Colors.grey,
+                      fontSize: _getResponsiveFontSize(16),
+                      fontWeight: _selectedExpiryDate != null ? FontWeight.w500 : FontWeight.normal,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildExpansionTile({
     required String stepNumber,
     required String title,
@@ -284,17 +413,17 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
           highlightColor: Colors.transparent,
         ),
         child: ExpansionTile(
-              leading: CircleAvatar(
-                backgroundColor:  const Color(0xFF0056A6),
-                radius: screenWidth < 360 ? 18 : 20,
-                child: Text(stepNumber, style: TextStyle(color: Colors.white, fontSize: _getResponsiveFontSize(16),),),
-              ),
-              title: Text(title, style: TextStyle(fontSize: _getResponsiveFontSize(18), fontWeight: FontWeight.bold, color: Color(0xFF000407),),),
-              iconColor: const Color(0xFF003465),
-              collapsedIconColor: Colors.grey.shade600,
-              childrenPadding: EdgeInsets.symmetric(vertical: screenWidth < 360 ? 8 : 10,),
-              expandedCrossAxisAlignment: CrossAxisAlignment.start,
-              children: children,
+          leading: CircleAvatar(
+            backgroundColor:  const Color(0xFF0056A6),
+            radius: screenWidth < 360 ? 18 : 20,
+            child: Text(stepNumber, style: TextStyle(color: Colors.white, fontSize: _getResponsiveFontSize(16),),),
+          ),
+          title: Text(title, style: TextStyle(fontSize: _getResponsiveFontSize(18), fontWeight: FontWeight.bold, color: Color(0xFF000407),),),
+          iconColor: const Color(0xFF003465),
+          collapsedIconColor: Colors.grey.shade600,
+          childrenPadding: EdgeInsets.symmetric(vertical: screenWidth < 360 ? 8 : 10,),
+          expandedCrossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
         ),
       ),
     );
@@ -341,7 +470,7 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
                   horizontal: screenWidth < 360 ? 16.0 : 20.0,
                 ),
                 child: Text(
-                  "Para continuar con tu inscripción, por favor escanea ambos lados de tu carnet de identidad.",
+                  "Para continuar con tu inscripción, por favor escanea ambos lados de tu carnet de identidad y selecciona la fecha de vencimiento.",
                   style: TextStyle(
                     fontSize: _getResponsiveFontSize(16),
                     color: Colors.black87,
@@ -362,6 +491,7 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
                 imagePath: _backImagePath,
                 icon: Icons.flip_camera_android_rounded,
               ),
+              _buildExpiryDateCard(), // Nuevo card de fecha
               SizedBox(height: screenWidth < 360 ? 20 : 30),
             ],
           ),
