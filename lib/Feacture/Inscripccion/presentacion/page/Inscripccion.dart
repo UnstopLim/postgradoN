@@ -72,7 +72,7 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
     }
   }
 
-  // Nueva función para seleccionar fecha de vencimiento
+
   Future<void> _selectExpiryDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -124,22 +124,18 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
     );
   }
 
-  // Actualizada la condición para incluir la fecha de vencimiento
-  bool get _canContinue =>
-      _frontImagePath != null &&
-          _backImagePath != null &&
-          _fromTituloImage != null &&
-          _back_tituloImage != null &&
-          _selectedExpiryDate != null; // Agregada condición de fecha
 
-  // Función para enviar las imágenes (actualizada para incluir fecha)
-  Future<void> _uploadImages() async {
+  bool get _canContinue => _frontImagePath != null && _backImagePath != null && _fromTituloImage != null && _back_tituloImage != null && _selectedExpiryDate != null;
+
+
+  Future<void> _uploadImages() async
+  {
     if (!_canContinue) {
       SnackVarVar("Por favor, escanea todas las imágenes y selecciona la fecha de vencimiento");
       return;
     }
     try {
-      // Formatear la fecha para envío a la API
+
       String expiryDateString = DateFormat('yyyy-MM-dd').format(_selectedExpiryDate!);
 
       await ref.read(inscripcionProvider.notifier).uploadImages(
@@ -147,7 +143,7 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
         backImagePath: _backImagePath!,
         frontTituloPath: _fromTituloImage!,
         backTituloPath: _back_tituloImage!,
-        expiryDate: expiryDateString, // Nuevo parámetro
+        expiryDate: expiryDateString,
       );
     } catch (e) {
       SnackVarVar("Error al subir imágenes: $e");
@@ -158,13 +154,10 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
   EdgeInsets _getResponsiveMargin() {
     final screenWidth = MediaQuery.of(context).size.width;
     if (screenWidth < 360) {
-      // Pantallas muy pequeñas
       return const EdgeInsets.symmetric(horizontal: 12, vertical: 8);
     } else if (screenWidth < 400) {
-      // Pantallas pequeñas
       return const EdgeInsets.symmetric(horizontal: 16, vertical: 10);
     } else {
-      // Pantallas normales y grandes
       return const EdgeInsets.symmetric(horizontal: 20, vertical: 12);
     }
   }
@@ -199,32 +192,20 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     if (screenHeight < 700 || screenWidth < 360) {
-      return 150; // Pantallas pequeñas
+      return 150;
     } else if (screenHeight < 800) {
-      return 180; // Pantallas medianas
+      return 180;
     } else {
-      return 200; // Pantallas grandes
+      return 200;
     }
   }
 
-  Widget _buildScanCard({
-    required String title,
-    required VoidCallback onScan,
-    required String? imagePath,
-    required IconData icon,
-  }) {
+  Widget _buildScanCard({required String title, required VoidCallback onScan, required String? imagePath, required IconData icon,})
+  {
     return Container(
       margin: _getResponsiveMargin(),
       padding: _getResponsivePadding(),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.indigo.shade100),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-              color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
-        ],
-      ),
+      decoration: BoxDecoration(color: Color(0xffffffff), border: Border.all(color: Color(0xff00345c)),borderRadius: BorderRadius.circular(16), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),],),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -251,10 +232,7 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
               Icons.camera_alt_outlined,
               size: _getResponsiveFontSize(20),
             ),
-            label: Text(
-              "Escanear",
-              style: TextStyle(fontSize: _getResponsiveFontSize(16)),
-            ),
+            label: Text("Escanear", style: TextStyle(fontSize: _getResponsiveFontSize(16)),),
             onPressed: onScan,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF003465),
@@ -301,14 +279,14 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
     );
   }
 
-  // Nueva función para el card de fecha de vencimiento (adaptada con responsividad)
+
   Widget _buildExpiryDateCard() {
     return Container(
       margin: _getResponsiveMargin(),
       padding: _getResponsivePadding(),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.indigo.shade100),
+        border: Border.all(color: Color(0xff01264c)),
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
@@ -392,34 +370,24 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
     );
   }
 
-  Widget _buildExpansionTile({
-    required String stepNumber,
-    required String title,
-    required List<Widget> children,
-  }) {
+  Widget _buildExpansionTile({required String stepNumber, required String title, required List<Widget> children,})
+  {
     final screenWidth = MediaQuery.of(context).size.width;
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: screenWidth < 360 ? 12 : 16, vertical: screenWidth < 360 ? 6 : 8,),
-      decoration: BoxDecoration(
-        color: Color(0xffced1d6),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 6)),],
-      ),
+      decoration: BoxDecoration(color: Colors.transparent,
+        border: Border.all(color: Color(0xff001d3a)),
+        borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.white, blurRadius: 10, offset: Offset(0, 6)),],),
       child: Theme(
-        data: Theme.of(context).copyWith(
-          dividerColor: Colors.transparent,
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-        ),
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent, splashColor: Colors.transparent, highlightColor: Colors.transparent,),
         child: ExpansionTile(
           leading: CircleAvatar(
-            backgroundColor:  const Color(0xFF0056A6),
+            backgroundColor:  const Color(0xFFD3A203),
             radius: screenWidth < 360 ? 18 : 20,
-            child: Text(stepNumber, style: TextStyle(color: Colors.white, fontSize: _getResponsiveFontSize(16),),),
+            child: Text(stepNumber, style: TextStyle(color: Colors.black, fontSize: _getResponsiveFontSize(16),),),
           ),
           title: Text(title, style: TextStyle(fontSize: _getResponsiveFontSize(18), fontWeight: FontWeight.bold, color: Color(0xFF000407),),),
-          iconColor: const Color(0xFF003465),
+          iconColor: const Color(0xFF0081FF),
           collapsedIconColor: Colors.grey.shade600,
           childrenPadding: EdgeInsets.symmetric(vertical: screenWidth < 360 ? 8 : 10,),
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
@@ -435,8 +403,6 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
     ref.listen<InscripcionState>(inscripcionProvider, (previous, next) {
       if (next.isSuccess) {
         SnackVarVar("¡Imágenes enviadas exitosamente!");
-        // Aquí puedes navegar a la siguiente pantalla si es necesario
-        // context.router.push(SiguientePantallaRoute());
       } else if (next.error != null) {
         SnackVarVar("Error: ${next.error}");
       }
@@ -448,157 +414,156 @@ class _InscripccionState extends ConsumerState<Inscripccion> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          "Inscripción",
-          style: TextStyle(fontSize: _getResponsiveFontSize(20)),
-        ),
-        backgroundColor: Colors.white,
-        elevation: screenWidth < 360 ? 1 : 2,
-      ),
-      body: ListView(
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth < 360 ? 4 : 0,
-        ),
+      body: Stack(
         children: [
-          _buildExpansionTile(
-            stepNumber: "1",
-            title: "Escanear carnet",
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth < 360 ? 16.0 : 20.0,
-                ),
-                child: Text(
-                  "Para continuar con tu inscripción, por favor escanea ambos lados de tu carnet de identidad y selecciona la fecha de vencimiento.",
-                  style: TextStyle(
-                    fontSize: _getResponsiveFontSize(16),
-                    color: Colors.black87,
-                    height: 1.4,
-                  ),
-                ),
-              ),
-              SizedBox(height: screenWidth < 360 ? 16 : 20),
-              _buildScanCard(
-                title: "Anverso del carnet",
-                onScan: () => _scanDocument(1),
-                imagePath: _frontImagePath,
-                icon: Icons.credit_card_rounded,
-              ),
-              _buildScanCard(
-                title: "Reverso del carnet",
-                onScan: () => _scanDocument(2),
-                imagePath: _backImagePath,
-                icon: Icons.flip_camera_android_rounded,
-              ),
-              _buildExpiryDateCard(), // Nuevo card de fecha
-              SizedBox(height: screenWidth < 360 ? 20 : 30),
-            ],
-          ),
-          _buildExpansionTile(
-            stepNumber: "2",
-            title: "Foto 4X4",
-            children: [
-              ListTile(
-                title: Text(
-                  "Sube tus certificados",
-                  style: TextStyle(fontSize: _getResponsiveFontSize(16)),
-                ),
-                dense: screenWidth < 360,
-              ),
-              ListTile(
-                title: Text(
-                  "Documentos adicionales",
-                  style: TextStyle(fontSize: _getResponsiveFontSize(16)),
-                ),
-                dense: screenWidth < 360,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth < 360 ? 12 : 16,
-                ),
-                child: Image.asset(
-                  "assets/edificio.png",
-                  fit: BoxFit.contain,
-                  height: screenHeight < 700 ? 120 : 150,
-                ),
-              ),
-            ],
-          ),
-          _buildExpansionTile(
-            stepNumber: "3",
-            title: "Escanear Documentación académica",
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth < 360 ? 16.0 : 20.0,
-                ),
-                child: Text(
-                  "Por favor escanea ambos lados de documentacion academica.",
-                  style: TextStyle(
-                    fontSize: _getResponsiveFontSize(16),
-                    color: Colors.black87,
-                    height: 1.4,
-                  ),
-                ),
-              ),
-              SizedBox(height: screenWidth < 360 ? 16 : 20),
-              _buildScanCard(
-                title: "Anverso del Titulo",
-                onScan: () => _scanDocument(3),
-                imagePath: _fromTituloImage,
-                icon: Icons.credit_card_rounded,
-              ),
-              _buildScanCard(
-                title: "Reverso del Titulo",
-                onScan: () => _scanDocument(4),
-                imagePath: _back_tituloImage,
-                icon: Icons.flip_camera_android_rounded,
-              ),
-              SizedBox(height: screenWidth < 360 ? 20 : 30),
-            ],
-          ),
-          SizedBox(height: screenWidth < 360 ? 20 : 30),
-          Padding(
+          Positioned.fill(child: Opacity(opacity: 0.2, child: Image.asset("assets/edificio.png", fit: BoxFit.contain),),),
+          ListView(
             padding: EdgeInsets.symmetric(
-              horizontal: screenWidth < 360 ? 16.0 : 20.0,
+              horizontal: screenWidth < 360 ? 4 : 0,
             ),
-            child: ElevatedButton.icon(
-              icon: inscripcionState.isLoading
-                  ? SizedBox(
-                width: screenWidth < 360 ? 14 : 16,
-                height: screenWidth < 360 ? 14 : 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
-                  : Icon(
-                Icons.arrow_forward_rounded,
-                size: _getResponsiveFontSize(20),
+            children: [
+              Center(child: Text("Inscripccion",style: TextStyle(fontSize:  _getResponsiveFontSize(20),height: 3),),),
+
+              _buildExpansionTile(
+                stepNumber: "1",
+                title: "Escanear carnet",
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth < 360 ? 16.0 : 20.0,
+                    ),
+                    child: Text(
+                      "Para continuar con tu inscripción, por favor escanea ambos lados de tu carnet de identidad y selecciona la fecha de vencimiento.",
+                      style: TextStyle(
+                        fontSize: _getResponsiveFontSize(16),
+                        color: Colors.black87,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: screenWidth < 360 ? 16 : 20),
+                  _buildScanCard(
+                    title: "Anverso del carnet",
+                    onScan: () => _scanDocument(1),
+                    imagePath: _frontImagePath,
+                    icon: Icons.credit_card_rounded,
+                  ),
+                  _buildScanCard(
+                    title: "Reverso del carnet",
+                    onScan: () => _scanDocument(2),
+                    imagePath: _backImagePath,
+                    icon: Icons.flip_camera_android_rounded,
+                  ),
+                  _buildExpiryDateCard(), // Nuevo card de fecha
+                  SizedBox(height: screenWidth < 360 ? 20 : 30),
+                ],
               ),
-              label: Text(
-                inscripcionState.isLoading ? "Enviando..." : "Siguiente",
-                style: TextStyle(fontSize: _getResponsiveFontSize(16)),
+              _buildExpansionTile(
+                stepNumber: "2",
+                title: "Foto 4X4",
+                children: [
+                  ListTile(
+                    title: Text(
+                      "Sube tus certificados",
+                      style: TextStyle(fontSize: _getResponsiveFontSize(16)),
+                    ),
+                    dense: screenWidth < 360,
+                  ),
+                  ListTile(
+                    title: Text(
+                      "Documentos adicionales",
+                      style: TextStyle(fontSize: _getResponsiveFontSize(16)),
+                    ),
+                    dense: screenWidth < 360,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth < 360 ? 12 : 16,
+                    ),
+                    child: Image.asset(
+                      "assets/edificio.png",
+                      fit: BoxFit.contain,
+                      height: screenHeight < 700 ? 120 : 150,
+                    ),
+                  ),
+                ],
               ),
-              onPressed: (_canContinue && !inscripcionState.isLoading)
-                  ? _uploadImages
-                  : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: (_canContinue && !inscripcionState.isLoading)
-                    ? const Color(0xFF003465)
-                    : Colors.grey.shade400,
-                foregroundColor: Colors.white,
+              _buildExpansionTile(
+                stepNumber: "3",
+                title: "Escanear Documentación académica",
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth < 360 ? 16.0 : 20.0,
+                    ),
+                    child: Text(
+                      "Por favor escanea ambos lados de documentacion academica.",
+                      style: TextStyle(
+                        fontSize: _getResponsiveFontSize(16),
+                        color: Colors.black87,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: screenWidth < 360 ? 16 : 20),
+                  _buildScanCard(
+                    title: "Anverso del Titulo",
+                    onScan: () => _scanDocument(3),
+                    imagePath: _fromTituloImage,
+                    icon: Icons.credit_card_rounded,
+                  ),
+                  _buildScanCard(
+                    title: "Reverso del Titulo",
+                    onScan: () => _scanDocument(4),
+                    imagePath: _back_tituloImage,
+                    icon: Icons.flip_camera_android_rounded,
+                  ),
+                  SizedBox(height: screenWidth < 360 ? 20 : 30),
+                ],
+              ),
+              SizedBox(height: screenWidth < 360 ? 20 : 30),
+              Padding(
                 padding: EdgeInsets.symmetric(
-                  vertical: screenWidth < 360 ? 14 : 16,
+                  horizontal: screenWidth < 360 ? 16.0 : 20.0,
                 ),
-                textStyle: TextStyle(fontSize: _getResponsiveFontSize(16)),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                child: ElevatedButton.icon(
+                  icon: inscripcionState.isLoading
+                      ? SizedBox(
+                    width: screenWidth < 360 ? 14 : 16,
+                    height: screenWidth < 360 ? 14 : 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                      : Icon(
+                    Icons.arrow_forward_rounded,
+                    size: _getResponsiveFontSize(20),
+                  ),
+                  label: Text(
+                    inscripcionState.isLoading ? "Enviando..." : "Siguiente",
+                    style: TextStyle(fontSize: _getResponsiveFontSize(16)),
+                  ),
+                  onPressed: (_canContinue && !inscripcionState.isLoading)
+                      ? _uploadImages
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: (_canContinue && !inscripcionState.isLoading)
+                        ? const Color(0xFF003465)
+                        : Colors.grey.shade400,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenWidth < 360 ? 14 : 16,
+                    ),
+                    textStyle: TextStyle(fontSize: _getResponsiveFontSize(16)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
               ),
-            ),
+              SizedBox(height: screenWidth < 360 ? 20 : 30)
+            ],
           ),
-          SizedBox(height: screenWidth < 360 ? 20 : 30)
         ],
       ),
     );

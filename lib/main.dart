@@ -12,7 +12,6 @@ void main() async {
   await storage.delete(key: 'auth_token');
   await storage.delete(key: 'auth_token_expiration');
 
-
   setupLocator();
   runApp(
     ProviderScope(

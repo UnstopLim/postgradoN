@@ -5,14 +5,12 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'dart:async';
 
-
 class Page1 extends StatefulWidget {
   const Page1({super.key});
 
   @override
   State<Page1> createState() => _Page1State();
 }
-
 
 class _Page1State extends State<Page1> with WidgetsBindingObserver {
   CameraController? _cameraController;
@@ -33,56 +31,52 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
   final FaceDetector _faceDetector = FaceDetector(
     options: FaceDetectorOptions(
       enableContours: true,
-      enableLandmarks: true,       // Habilita detección de puntos de referencia (ojos, nariz, boca)
-      enableClassification: true,  // Habilita clasificación (sonrisa, ojos abiertos)
-      enableTracking: true,        // Habilita seguimiento de rostros entre frames
-      minFaceSize: 0.05,          // Tamaño mínimo del rostro (15% de la imagen)
-      performanceMode: FaceDetectorMode.fast, // Modo rápido para tiempo real
+      enableLandmarks: true,
+      enableClassification: true,
+      enableTracking: true,
+      minFaceSize: 0.05,
+      performanceMode: FaceDetectorMode.fast,
     ),
   );
 
-  // ========== INICIALIZACIÓN DEL WIDGET ==========
+
   @override
   void initState() {
     super.initState();
-    // Registra este widget para recibir notificaciones del ciclo de vida de la app
     WidgetsBinding.instance.addObserver(this);
     // Inicia la configuración de la cámara
     _initializeCamera();
   }
 
-  // ========== LIMPIEZA AL DESTRUIR EL WIDGET ==========
+  // ========== LIMPIEZA
   @override
   void dispose() {
-    _detectionTimer?.cancel();                        // Cancela el timer de análisis
-    WidgetsBinding.instance.removeObserver(this);     // Desregistra el observer
-    _cameraController?.dispose();                     // Libera los recursos de la cámara
-    _faceDetector.close();                           // Cierra el detector facial
+    _detectionTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    _cameraController?.dispose();
+    _faceDetector.close();
     super.dispose();
   }
 
-  // ========== MANEJO DEL CICLO DE VIDA DE LA APLICACIÓN ==========
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? cameraController = _cameraController;
 
     // Si no hay controlador o no está inicializado, no hace nada
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      return;
-    }
+    if (cameraController == null || !cameraController.value.isInitialized) {return;}
 
     // Cuando la app pase a segundo plano (inactive)
     if (state == AppLifecycleState.inactive) {
-      _detectionTimer?.cancel();      // Detiene el análisis
-      cameraController.dispose();     // Libera la cámara
+      _detectionTimer?.cancel();
+      cameraController.dispose();
     }
     // Cuando la app regrese al primer plano (resumed)
     else if (state == AppLifecycleState.resumed) {
-      _initializeCamera();           // Reinicializa la cámara
+      _initializeCamera();
     }
   }
 
-  // ========== INICIALIZACIÓN DE LA CÁMARA ==========
+  // ========== INICIALIZACIÓN
   Future<void> _initializeCamera() async {
     try {
       // PASO 1: Solicitar permiso de cámara
