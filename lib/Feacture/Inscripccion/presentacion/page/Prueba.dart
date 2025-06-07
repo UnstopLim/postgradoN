@@ -21,10 +21,18 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
   XFile? _capturedImage;
   bool _faceDetected = false;
   bool _realPersonDetected = false;
+  bool _faceCentered = false; // Nueva variable para centrado
+  bool _faceComplete = false; // Nueva variable para rostro completo
   String _detectionStatus = '';
 
   Timer? _detectionTimer;
   bool _isAnalyzing = false;
+
+  // Dimensiones del marco de referencia
+  static const double FRAME_WIDTH = 280.0;
+  static const double FRAME_HEIGHT = 350.0;
+  static const double CENTER_TOLERANCE = 50.0; // Tolerancia para el centrado
+  static const double MIN_FACE_SIZE_RATIO = 0.4; // Mínimo 40% del marco
 
   // ========== CONFIGURACIÓN DEL DETECTOR FACIAL ML KIT ==========
   final FaceDetector _faceDetector = FaceDetector(
@@ -33,8 +41,8 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
       enableLandmarks: true,
       enableClassification: true,
       enableTracking: true,
-      minFaceSize: 0.05,
-      performanceMode: FaceDetectorMode.fast,
+      minFaceSize: 0.15, // Aumentado para rostros más grandes
+      performanceMode: FaceDetectorMode.accurate, // Cambiado a accurate
     ),
   );
 
@@ -95,7 +103,7 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
 
       _cameraController = CameraController(
         frontCamera,
-        ResolutionPreset.medium,
+        ResolutionPreset.high, // Cambiado a high para mejor detección
         enableAudio: false,
         imageFormatGroup: ImageFormatGroup.jpeg,
       );
@@ -104,7 +112,7 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
 
       setState(() {
         _isCameraInitialized = true;
-        _detectionStatus = 'Posiciona tu rostro en el marco - Analizando...';
+        _detectionStatus = 'Posiciona tu rostro centrado en el marco';
       });
 
       _startPeriodicDetection();
@@ -118,7 +126,7 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
 
   // ========== ANÁLISIS CONTINUO EN TIEMPO REAL ==========
   void _startPeriodicDetection() {
-    _detectionTimer = Timer.periodic(Duration(milliseconds: 800), (timer) async {
+    _detectionTimer = Timer.periodic(Duration(milliseconds: 600), (timer) async {
       if (!_isCameraInitialized || _cameraController == null || _isAnalyzing || _capturedImage != null) {
         return;
       }
@@ -138,20 +146,35 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
       final List<Face> faces = await _faceDetector.processImage(inputImage);
 
       final bool hasFace = faces.isNotEmpty;
-      final bool isRealPerson = hasFace ? _analyzeface(faces.first) : false;
+      bool isRealPerson = false;
+      bool isCentered = false;
+      bool isComplete = false;
 
-      if (_faceDetected != hasFace || _realPersonDetected != isRealPerson) {
+      if (hasFace) {
+        final Face face = faces.first;
+
+        // Obtener dimensiones de la imagen
+        final imageSize = await _getImageSize(tempImage.path);
+
+        // Análisis completo del rostro
+        isRealPerson = _analyzeRealPerson(face);
+        isCentered = _analyzeFaceCentering(face, imageSize);
+        isComplete = _analyzeFaceCompleteness(face, imageSize);
+      }
+
+      // Actualizar estado solo si hay cambios
+      if (_faceDetected != hasFace ||
+          _realPersonDetected != isRealPerson ||
+          _faceCentered != isCentered ||
+          _faceComplete != isComplete) {
+
         setState(() {
           _faceDetected = hasFace;
           _realPersonDetected = isRealPerson;
+          _faceCentered = isCentered;
+          _faceComplete = isComplete;
 
-          if (!hasFace) {
-            _detectionStatus = '👤 Coloca tu rostro en el marco';
-          } else if (!isRealPerson) {
-            _detectionStatus = '⚠️ Rostro detectado - Verificando autenticidad...';
-          } else {
-            _detectionStatus = '✅ Persona real detectada - ¡Puedes tomar la foto!';
-          }
+          _detectionStatus = _getDetectionMessage();
         });
       }
 
@@ -167,11 +190,157 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
     }
   }
 
-  // ========== CAPTURA DE IMAGEN FINAL (SIMPLIFICADA) ==========
-  Future<void> _takePicture() async {
-    if (!_isCameraInitialized || _cameraController == null || !_realPersonDetected) {
-      return;
+  // ========== OBTENER TAMAÑO DE IMAGEN ==========
+  Future<Size> _getImageSize(String imagePath) async {
+    final File imageFile = File(imagePath);
+    final bytes = await imageFile.readAsBytes();
+    final image = await decodeImageFromList(bytes);
+    return Size(image.width.toDouble(), image.height.toDouble());
+  }
+
+  // ========== ANÁLISIS DE CENTRADO DEL ROSTRO ==========
+  bool _analyzeFaceCentering(Face face, Size imageSize) {
+    final boundingBox = face.boundingBox;
+
+    // Calcular el centro del rostro
+    final faceCenterX = boundingBox.left + (boundingBox.width / 2);
+    final faceCenterY = boundingBox.top + (boundingBox.height / 2);
+
+    // Calcular el centro de la imagen
+    final imageCenterX = imageSize.width / 2;
+    final imageCenterY = imageSize.height / 2;
+
+    // Calcular la distancia desde el centro
+    final distanceX = (faceCenterX - imageCenterX).abs();
+    final distanceY = (faceCenterY - imageCenterY).abs();
+
+    // Tolerancia basada en el tamaño de la imagen
+    final toleranceX = imageSize.width * 0.15; // 15% de tolerancia horizontal
+    final toleranceY = imageSize.height * 0.12; // 12% de tolerancia vertical
+
+    return distanceX < toleranceX && distanceY < toleranceY;
+  }
+
+  // ========== ANÁLISIS DE COMPLETITUD DEL ROSTRO ==========
+  bool _analyzeFaceCompleteness(Face face, Size imageSize) {
+    final boundingBox = face.boundingBox;
+
+    // Verificar que el rostro no esté cortado por los bordes
+    const double MARGIN = 20.0; // Margen mínimo desde los bordes
+
+    bool notCutOffLeft = boundingBox.left > MARGIN;
+    bool notCutOffRight = boundingBox.right < (imageSize.width - MARGIN);
+    bool notCutOffTop = boundingBox.top > MARGIN;
+    bool notCutOffBottom = boundingBox.bottom < (imageSize.height - MARGIN);
+
+    // Verificar tamaño mínimo del rostro
+    final faceArea = boundingBox.width * boundingBox.height;
+    final imageArea = imageSize.width * imageSize.height;
+    final faceRatio = faceArea / imageArea;
+
+    bool adequateSize = faceRatio > 0.08; // Al menos 8% de la imagen
+    bool notTooLarge = faceRatio < 0.4; // No más del 40% de la imagen
+
+    // Verificar que el rostro tenga proporciones normales
+    final aspectRatio = boundingBox.width / boundingBox.height;
+    bool normalAspectRatio = aspectRatio > 0.6 && aspectRatio < 1.4;
+
+    return notCutOffLeft &&
+        notCutOffRight &&
+        notCutOffTop &&
+        notCutOffBottom &&
+        adequateSize &&
+        notTooLarge &&
+        normalAspectRatio;
+  }
+
+  // ========== ANÁLISIS DE PERSONA REAL (MEJORADO) ==========
+  bool _analyzeRealPerson(Face face) {
+    double confidence = 0.0;
+    int checks = 0;
+
+    // Verificar que tenga landmarks importantes
+    if (face.landmarks.isNotEmpty) {
+      confidence += 0.2;
+      checks++;
     }
+
+    // Verificación ojos abiertos (más estricta)
+    if (face.leftEyeOpenProbability != null && face.rightEyeOpenProbability != null) {
+      checks++;
+      final leftEyeOpen = face.leftEyeOpenProbability! > 0.3;
+      final rightEyeOpen = face.rightEyeOpenProbability! > 0.3;
+
+      if (leftEyeOpen && rightEyeOpen) {
+        confidence += 0.3;
+      } else if (leftEyeOpen || rightEyeOpen) {
+        confidence += 0.15;
+      }
+    }
+
+    // Verificación sonrisa (opcional pero ayuda)
+    if (face.smilingProbability != null) {
+      checks++;
+      confidence += face.smilingProbability! * 0.1;
+    }
+
+    // Verificación rotación de cabeza (debe estar relativamente frontal)
+    if (face.headEulerAngleY != null && face.headEulerAngleX != null) {
+      checks++;
+      final headYaw = face.headEulerAngleY!.abs();
+      final headPitch = face.headEulerAngleX!.abs();
+
+      // Penalizar rotaciones extremas
+      if (headYaw < 20 && headPitch < 20) {
+        confidence += 0.25;
+      } else if (headYaw < 35 && headPitch < 35) {
+        confidence += 0.1;
+      }
+    }
+
+    // Verificación de contornos faciales
+    if (face.contours.isNotEmpty) {
+      confidence += 0.15;
+      checks++;
+    }
+
+    return checks >= 3 && confidence > 0.5;
+  }
+
+  // ========== GENERAR MENSAJE DE ESTADO ==========
+  String _getDetectionMessage() {
+    if (!_faceDetected) {
+      return '👤 Coloca tu rostro en el marco';
+    }
+
+    if (!_faceComplete) {
+      return '⚠️ Asegúrate que tu rostro esté completo en el marco';
+    }
+
+    if (!_faceCentered) {
+      return '🎯 Centra tu rostro en el marco';
+    }
+
+    if (!_realPersonDetected) {
+      return '🔍 Verificando autenticidad del rostro...';
+    }
+
+    return '✅ ¡Perfecto! Rostro centrado y verificado - Puedes tomar la foto';
+  }
+
+  // ========== VERIFICAR SI PUEDE TOMAR FOTO ==========
+  bool get _canTakePhoto {
+    return _faceDetected &&
+        _realPersonDetected &&
+        _faceCentered &&
+        _faceComplete &&
+        _isCameraInitialized &&
+        !_isLoading;
+  }
+
+  // ========== CAPTURA DE IMAGEN FINAL ==========
+  Future<void> _takePicture() async {
+    if (!_canTakePhoto) return;
 
     _detectionTimer?.cancel();
 
@@ -198,58 +367,15 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
     }
   }
 
-  // ========== ALGORITMO DE ANÁLISIS FACIAL ==========
-  bool _analyzeface(Face face) {
-    double confidence = 0.0;
-    int checks = 0;
-
-    // Verificación ojos abiertos
-    if (face.leftEyeOpenProbability != null) {
-      checks++;
-      if (face.leftEyeOpenProbability! > 0.1) {
-        confidence += 0.25;
-      }
-    }
-
-    if (face.rightEyeOpenProbability != null) {
-      checks++;
-      if (face.rightEyeOpenProbability! > 0.1) {
-        confidence += 0.25;
-      }
-    }
-
-    // Verificación sonrisa
-    if (face.smilingProbability != null) {
-      checks++;
-      confidence += face.smilingProbability! * 0.15;
-    }
-
-    // Verificación rotación de cabeza
-    if (face.headEulerAngleY != null && face.headEulerAngleX != null) {
-      checks++;
-      final headMovement = (face.headEulerAngleY!.abs() + face.headEulerAngleX!.abs()) / 2;
-      if (headMovement > 2) {
-        confidence += 0.2;
-      }
-    }
-
-    // Verificación tamaño del rostro
-    final boundingBox = face.boundingBox;
-    final faceArea = boundingBox.width * boundingBox.height;
-    if (faceArea > 15000) {
-      confidence += 0.15;
-    }
-
-    return checks >= 2 && confidence > 0.35;
-  }
-
   // ========== REINICIAR PROCESO ==========
   void _retakePicture() {
     setState(() {
       _capturedImage = null;
       _faceDetected = false;
       _realPersonDetected = false;
-      _detectionStatus = 'Reiniciando análisis en tiempo real...';
+      _faceCentered = false;
+      _faceComplete = false;
+      _detectionStatus = 'Reiniciando análisis...';
     });
 
     _startPeriodicDetection();
@@ -262,7 +388,7 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
       backgroundColor: Colors.black87,
       appBar: AppBar(
         title: const Text(
-          'Detección Facial AI - Tiempo Real',
+          'Detección Facial AI - Centrado Completo',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.deepPurple,
@@ -271,7 +397,7 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
       body: SafeArea(
         child: Column(
           children: [
-            // Status card
+            // Status card mejorado
             Container(
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(16),
@@ -279,7 +405,7 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
                 color: Colors.white10,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: _realPersonDetected
+                  color: _canTakePhoto
                       ? Colors.green
                       : _faceDetected
                       ? Colors.orange
@@ -288,46 +414,62 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: (_realPersonDetected ? Colors.green : _faceDetected ? Colors.orange : Colors.red).withOpacity(0.3),
+                    color: (_canTakePhoto ? Colors.green : _faceDetected ? Colors.orange : Colors.red).withOpacity(0.3),
                     blurRadius: 8,
                     spreadRadius: 1,
                   ),
                 ],
               ),
-              child: Row(
+              child: Column(
                 children: [
-                  Container(
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: _realPersonDetected
-                          ? Colors.green
-                          : _faceDetected
-                          ? Colors.orange
-                          : Colors.red,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      _detectionStatus,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
+                  Row(
+                    children: [
+                      Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: _canTakePhoto
+                              ? Colors.green
+                              : _faceDetected
+                              ? Colors.orange
+                              : Colors.red,
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                    ),
-                  ),
-                  if (_isAnalyzing)
-                    Container(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _detectionStatus,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
+                      if (_isAnalyzing)
+                        Container(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
+                          ),
+                        ),
+                    ],
+                  ),
+
+                  // Indicadores de estado
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildStatusIndicator('Rostro', _faceDetected),
+                      _buildStatusIndicator('Completo', _faceComplete),
+                      _buildStatusIndicator('Centrado', _faceCentered),
+                      _buildStatusIndicator('Verificado', _realPersonDetected),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -370,6 +512,31 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
           ],
         ),
       ),
+    );
+  }
+
+  // ========== INDICADOR DE ESTADO ==========
+  Widget _buildStatusIndicator(String label, bool isActive) {
+    return Column(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: isActive ? Colors.green : Colors.grey,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            color: isActive ? Colors.green : Colors.grey,
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 
@@ -417,22 +584,22 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
               ),
             ),
 
-            // Guide frame
+            // Marco de guía mejorado
             Center(
               child: Container(
-                width: 280,
-                height: 350,
+                width: FRAME_WIDTH,
+                height: FRAME_HEIGHT,
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: _realPersonDetected
+                    color: _canTakePhoto
                         ? Colors.green
                         : _faceDetected
                         ? Colors.orange
                         : Colors.white70,
-                    width: _realPersonDetected ? 4 : 3,
+                    width: _canTakePhoto ? 4 : 3,
                   ),
                   borderRadius: BorderRadius.circular(25),
-                  boxShadow: _realPersonDetected ? [
+                  boxShadow: _canTakePhoto ? [
                     BoxShadow(
                       color: Colors.green.withOpacity(0.4),
                       blurRadius: 10,
@@ -440,7 +607,7 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
                     ),
                   ] : null,
                 ),
-                child: _realPersonDetected
+                child: _canTakePhoto
                     ? Stack(
                   children: [
                     Positioned(
@@ -464,6 +631,18 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
                     : null,
               ),
             ),
+
+            // Líneas de guía para centrado
+            if (_faceDetected && !_faceCentered)
+              Center(
+                child: Container(
+                  width: FRAME_WIDTH,
+                  height: FRAME_HEIGHT,
+                  child: CustomPaint(
+                    painter: GuideLinesPainter(),
+                  ),
+                ),
+              ),
 
             if (_isLoading)
               Container(
@@ -514,7 +693,7 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
               ),
             ),
           ),
-          if (_realPersonDetected)
+          if (_canTakePhoto)
             Positioned(
               top: 16,
               right: 16,
@@ -542,25 +721,23 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          width: 200,
+          width: 220,
           height: 60,
           child: FloatingActionButton.extended(
-            onPressed: _isCameraInitialized && !_isLoading && _realPersonDetected
-                ? _takePicture
-                : null,
-            backgroundColor: _realPersonDetected ? Colors.green : Colors.grey[600],
-            elevation: _realPersonDetected ? 8 : 2,
+            onPressed: _canTakePhoto ? _takePicture : null,
+            backgroundColor: _canTakePhoto ? Colors.green : Colors.grey[600],
+            elevation: _canTakePhoto ? 8 : 2,
             icon: Icon(
               Icons.camera_alt,
               color: Colors.white,
               size: 28,
             ),
             label: Text(
-              _realPersonDetected ? 'CAPTURAR FOTO' : 'ESPERANDO ROSTRO...',
+              _canTakePhoto ? 'CAPTURAR FOTO 4x4' : 'POSICIONA TU ROSTRO',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 15,
               ),
             ),
           ),
@@ -584,7 +761,7 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
-        if (_realPersonDetected)
+        if (_canTakePhoto)
           FloatingActionButton.extended(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -593,7 +770,7 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
                     children: [
                       Icon(Icons.check_circle, color: Colors.white),
                       SizedBox(width: 8),
-                      Text('Verificación exitosa - Imagen válida'),
+                      Text('Foto 4x4 capturada correctamente'),
                     ],
                   ),
                   backgroundColor: Colors.green,
@@ -608,11 +785,39 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
             elevation: 6,
             icon: const Icon(Icons.verified, color: Colors.white),
             label: const Text(
-              'VERIFICADO',
+              'FOTO 4x4 OK',
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
       ],
     );
   }
+}
+
+// ========== PAINTER PARA LÍNEAS DE GUÍA ==========
+class GuideLinesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.5)
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+
+    // Línea vertical central
+    canvas.drawLine(
+      Offset(size.width / 2, 0),
+      Offset(size.width / 2, size.height),
+      paint,
+    );
+
+    // Línea horizontal central
+    canvas.drawLine(
+      Offset(0, size.height / 2),
+      Offset(size.width, size.height / 2),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
