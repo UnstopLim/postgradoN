@@ -774,24 +774,10 @@ class _InscripccionState extends ConsumerState<Inscripccion> with WidgetsBinding
                       children: [
                         Row(
                           children: [
-                            Container(
-                              width: 16,
-                              height: 16,
-                              decoration: BoxDecoration(
-                                color: _canTakePhoto ? Colors.green : _faceDetected ? Colors.orange : Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
+                            Container(width: 16, height: 16, decoration: BoxDecoration(color: _canTakePhoto ? Colors.green : _faceDetected ? Colors.orange : Colors.red, shape: BoxShape.circle,),),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: Text(
-                                _detectionStatus,
-                                style: const TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
+                              child: Text(_detectionStatus, style: const TextStyle(color: Colors.black87, fontSize: 15, fontWeight: FontWeight.w500,),),
                             ),
                             if (_isAnalyzing)
                               Container(
@@ -824,13 +810,7 @@ class _InscripccionState extends ConsumerState<Inscripccion> with WidgetsBinding
                     height: 400,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
+                      boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 15, offset: const Offset(0, 8),),],
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
@@ -1112,16 +1092,17 @@ class _InscripccionState extends ConsumerState<Inscripccion> with WidgetsBinding
             child: ElevatedButton.icon(
               onPressed: _canTakePhoto ? _takePicture : null,
               //backgroundColor: _canTakePhoto ? Colors.green : Colors.grey[600],
-              icon: Icon(Icons.camera_alt, color: Colors.white, size: 28),
+              icon: Icon(Icons.camera_alt, color: Color(0xffedd631), size: 28),
               label: Text(
                 _canTakePhoto ? 'CAPTURAR FOTO 4x4' : 'POSICIONA TU ROSTRO',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Color(0xffffffff),
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                 ),
               ),
               style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xff0056a6),
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
