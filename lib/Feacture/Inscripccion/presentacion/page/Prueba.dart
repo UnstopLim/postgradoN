@@ -24,9 +24,9 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
   bool _faceCentered = false; // Nueva variable para centrado
   bool _faceComplete = false; // Nueva variable para rostro completo
   String _detectionStatus = '';
-
   Timer? _detectionTimer;
   bool _isAnalyzing = false;
+  bool _isCapturing = false; // Nueva variable
 
   // Dimensiones del marco de referencia
   static const double FRAME_WIDTH = 280.0;
@@ -136,12 +136,22 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
 
   // ========== ANÁLISIS DE FRAME INDIVIDUAL ==========
   Future<void> _analyzeCurrentFrame() async {
-    if (_isAnalyzing) return;
+    if (_isAnalyzing || _isCapturing) return;
 
     _isAnalyzing = true;
 
     try {
+
+      if (_isCapturing) {
+        _isAnalyzing = false;
+        return;
+      }
+
+      _isCapturing = true;
       final XFile tempImage = await _cameraController!.takePicture();
+      _isCapturing = false;
+
+
       final inputImage = InputImage.fromFilePath(tempImage.path);
       final List<Face> faces = await _faceDetector.processImage(inputImage);
 
@@ -340,9 +350,10 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
 
   // ========== CAPTURA DE IMAGEN FINAL ==========
   Future<void> _takePicture() async {
-    if (!_canTakePhoto) return;
+    if (!_canTakePhoto || _isCapturing) return; // Agregar _isCapturing
 
     _detectionTimer?.cancel();
+    _isCapturing = true; // Marcar que está capturando
 
     setState(() {
       _isLoading = true;
@@ -350,6 +361,7 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
     });
 
     try {
+
       final XFile picture = await _cameraController!.takePicture();
 
       setState(() {
@@ -357,18 +369,23 @@ class _Page1State extends State<Page1> with WidgetsBindingObserver {
         _isLoading = false;
         _detectionStatus = '✅ Imagen capturada y verificada correctamente';
       });
+      _isCapturing = false; // Liberar bandera
 
     } catch (e) {
+      _isCapturing = false; // Liberar bandera
       setState(() {
         _isLoading = false;
         _detectionStatus = 'Error al tomar foto: $e';
       });
       _startPeriodicDetection();
     }
+
+
   }
 
   // ========== REINICIAR PROCESO ==========
   void _retakePicture() {
+    _isCapturing = false;
     setState(() {
       _capturedImage = null;
       _faceDetected = false;

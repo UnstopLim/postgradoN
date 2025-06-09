@@ -29,13 +29,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      //routerConfig: _app_router.config(),
-      home: Page1(),
+      routerConfig: _app_router.config(),
+      //home: Page1(),
     );
   }
 }

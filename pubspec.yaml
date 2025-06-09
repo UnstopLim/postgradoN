@@ -56,6 +56,8 @@ dependencies:
   permission_handler: ^11.0.1
     # Detección facial con ML Kit
   google_mlkit_face_detection: ^0.13.1
+  provider: ^6.1.1  # Agrega esta línea
+
 
   intl: ^0.18.1
 
